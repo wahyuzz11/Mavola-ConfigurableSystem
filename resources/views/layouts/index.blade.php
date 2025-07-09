@@ -1,389 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Mavelo</title>
-    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
-    <link rel="icon" href="{{ asset('assets/img/kaiadmin/favicon.ico') }}" type="image/x-icon" />
+    <meta charset="utf-8">
+    <title>Mavola</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
 
-    <!-- Fonts and icons -->
-    <script src="{{ asset('assets/js/plugin/webfont/webfont.min.js') }}"></script>
-    <script>
-        WebFont.load({
-            google: {
-                families: ["Public Sans:300,400,500,600,700"]
-            },
-            custom: {
-                families: [
-                    "Font Awesome 5 Solid",
-                    "Font Awesome 5 Regular",
-                    "Font Awesome 5 Brands",
-                    "simple-line-icons",
-                ],
-                urls: ["{{ asset('assets/css/fonts.min.css') }}"],
-                // test
-            },
-            active: function() {
-                sessionStorage.fonts = true;
-            },
-        });
-    </script>
+    <!-- Favicon -->
+    <link href="{{ asset('assets/img/favicon.ico') }}" rel="icon">
 
-    <!-- CSS Files -->
-    @yield('link')
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/plugins.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/kaiadmin.min.css') }}" />
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-    <!-- CSS Just for demo purpose, don't include it in your project -->
-    {{-- <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" /> --}}
+    <!-- Libraries Stylesheet -->
+    <link href="{{ asset('assets/lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css') }}" rel="stylesheet" />
 
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
 
-
+    <!-- Template Stylesheet -->
+    <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
+    @yield('link')
 </head>
 
 <body>
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <div class="sidebar" data-background-color="dark">
-            <div class="sidebar-logo">
-                <!-- Logo Header -->
-                <div class="logo-header" data-background-color="dark">
-                    <a class="logo">
-                        <span style="color:white">Mavelo</span>
-                    </a>
-                    <div class="nav-toggle">
-                        <button class="btn btn-toggle toggle-sidebar">
-                            <i class="gg-menu-right"></i>
-                        </button>
-                        <button class="btn btn-toggle sidenav-toggler">
-                            <i class="gg-menu-left"></i>
-                        </button>
-                    </div>
-                    <button class="topbar-toggler more">
-                        <i class="gg-more-vertical-alt"></i>
-                    </button>
-                </div>
-                <!-- End Logo Header -->
-            </div>
-            <div class="sidebar-wrapper scrollbar scrollbar-inner">
-                <div class="sidebar-content">
-                    <ul class="nav nav-secondary">
-                        <li class="nav-item active">
-                            <a href="{{ route('home') }}">
-                                <i class="fas fa-home"></i>
-                                <p>Dashboard</p>
-                            </a>
-                        </li>
-                        <li class="nav-section">
-                            <span class="sidebar-mini-icon">
-                                <i class="fa fa-ellipsis-h"></i>
-                            </span>
-                            <h4 class="text-section">Menus</h4>
-                        </li>
+    <div class="container-xxl position-relative bg-white d-flex p-0">
+        <div class="sidebar pe-4 pb-3">
+            <nav class="navbar bg-light navbar-light">
+                <a href="index.html" class="navbar-brand mx-4 mb-3">
+                    <h3 class="text-primary">Mavola</h3>
+                </a>
 
-
-                        <li class="nav-item">
-                            <a data-bs-toggle="collapse" href="#inventory">
-                                <i class="fas fa-layer-group"></i>
-                                <p>Inventory</p>
-                                <span class="caret"></span>
-                            </a>
-                            <div class="collapse" id="inventory">
-                                <ul class="nav nav-collapse">
-                                    <li>
-                                        <a href="{{ route('products.index') }}">
-                                            <span class="sub-item">Product List</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('products.category') }}">
-                                            <span class="sub-item">Product Category</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('products.create') }}">
-                                            <span class="sub-item">Add new products</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li class="nav-item">
-                            <a data-bs-toggle="collapse" href="#purchase">
-                                <i class="fas fa-layer-group"></i>
-                                <p>Purchase</p>
-                                <span class="caret"></span>
-                            </a>
-                            <div class="collapse" id="purchase">
-                                <ul class="nav nav-collapse">
-                                    <li>
-                                        <a href="{{ route('purchases.index') }}">
-                                            <span class="sub-item">Purchase Reports</span>
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="{{ route('purchases.create') }}">
-                                            <span class="sub-item">Add New Purchase</span>
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="{{ route('purchases.suppliers') }}">
-                                            <span class="sub-item">Suppliers</span>
-                                        </a>
-                                    </li>
-
-                                    @if ($showDebtHistory ?? false)
-                                        <li>
-                                            <a href="{{ route('debts.index') }}">
-                                                <span class="sub-item">Debt History</span>
-                                            </a>
-                                        </li>
-                                    @endif
-                                </ul>
-                            </div>
-                        </li>
-
-                        {{-- MENU ITEM PENTING --}}
-                        <li class="nav-item">
-                            <a data-bs-toggle="collapse" href="#sale">
-                                <i class="fas fa-layer-group"></i>
-                                <p>Sale</p>
-                                <span class="caret"></span>
-                            </a>
-                            <div class="collapse" id="sale">
-                                <ul class="nav nav-collapse">
-                                    <li>
-                                        <a href="{{ route('sales.index') }}">
-                                            <span class="sub-item">Sale Reports</span>
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="{{ route('sales.create') }}">
-                                            <span class="sub-item">Add New Sale</span>
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="{{ route('sales.customers') }}">
-                                            <span class="sub-item">Customers</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li class="nav-item">
-                            <a data-bs-toggle="collapse" href="#settings">
-                                <i class="fas fa-layer-group"></i>
-                                <p>settings</p>
-                                <span class="caret"></span>
-                            </a>
-                            <div class="collapse" id="settings">
-                                <ul class="nav nav-collapse">
-                                    <li>
-                                        <a href="{{ route('settings.inventory') }}">
-                                            <span class="sub-item">Inventory Configuration</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('settings.purchase') }}">
-                                            <span class="sub-item">Purchase Configuration</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('settings.sale') }}">
-                                            <span class="sub-item">Sale Configuration</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        {{-- <li class="nav-item mt-auto"> <!-- mt-auto pushes it to the bottom -->
-                            <a href="#"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <p>Logout</p>
-                            </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                @csrf
-                            </form>
-                        </li> --}}
-
-                        <li class="nav-item mt-auto">
-                            <a href="#" onclick="return confirmLogout()">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <p>Logout</p>
-                            </a>
-                            <!-- Hidden logout form -->
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                style="display: none;">
-                                @csrf
-                            </form>
-                        </li>
-
-
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <!-- End Sidebar -->
-
-        <div class="main-panel">
-            <div class="main-header">
-                <div class="main-header-logo">
-                    <!-- Logo Header -->
-                    <div class="logo-header" data-background-color="dark">
-                        <a href="index.html" class="logo">
-                            <img src="{{ asset('assets/img/kaiadmin/logo_light.svg') }}" alt="navbar brand"
-                                class="navbar-brand" height="20" />
-                        </a>
-                        <div class="nav-toggle">
-                            <button class="btn btn-toggle toggle-sidebar">
-                                <i class="gg-menu-right"></i>
-                            </button>
-                            <button class="btn btn-toggle sidenav-toggler">
-                                <i class="gg-menu-left"></i>
-                            </button>
+                
+                <div class="navbar-nav w-100">
+                    <a href="{{ route('home') }}" class="nav-item nav-link active"><i
+                            class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
+                                class="fas fa-layer-group me-2"></i>Inventory</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="{{ route('products.index') }}" class="dropdown-item">Product List</a>
+                            <a href="{{ route('products.category') }}" class="dropdown-item">Product Category</a>
+                            <a href="{{ route('products.create') }}" class="dropdown-item">Add new products</a>
                         </div>
-                        <button class="topbar-toggler more">
-                            <i class="gg-more-vertical-alt"></i>
-                        </button>
                     </div>
-                    <!-- End Logo Header -->
+
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
+                                class="fas fa-layer-group me-2"></i>Purchase</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="{{ route('purchases.index') }}" class="dropdown-item">Purchase Reports</a>
+                            <a href="{{ route('purchases.create') }}" class="dropdown-item">Add New Purchase</a>
+                            <a href="{{ route('purchases.suppliers') }}" class="dropdown-item">Suppliers</a>
+                            @if ($showDebtHistory ?? false)
+                                <a href="{{ route('debts.index') }}" class="dropdown-item">Debt History</a>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
+                                class="fas fa-layer-group me-2"></i>Sale</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="{{ route('sales.index') }}" class="dropdown-item">Sale Reports</a>
+                            <a href="{{ route('sales.create') }}" class="dropdown-item">Add New Sale</a>
+                            <a href="{{ route('sales.customers') }}" class="dropdown-item">Customers</a>
+                        </div>
+                    </div>
+
+                    @if (auth()->user()->employee->position == 'owner')
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
+                                    class="fas fa-layer-group me-2"></i>Settings</a>
+                            <div class="dropdown-menu bg-transparent border-0">
+                                <a href="{{ route('settings.inventory') }}" class="dropdown-item">Inventory
+                                    Configuration</a>
+                                <a href="{{ route('settings.purchase') }}" class="dropdown-item">Purchase
+                                    Configuration</a>
+                                <a href="{{ route('settings.sale') }}" class="dropdown-item">Sale Configuration</a>
+                            </div>
+                        </div>
+                    @endif
+
+
+
                 </div>
-                <!-- Navbar Header -->
-
-                {{-- profile --}}
-                <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
-                    <div class="container-fluid">
-                        <nav
-                            class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
-                        </nav>
-                        <ul>
-
-                            @auth
-                                <div>
-                                    Welcome, {{ auth()->user()->employee->name }}
-                                </div>
-                            @endauth
-                            </a>
-
-                        </ul>
-                    </div>
-                </nav>
-                <!-- End Navbar -->
-            </div>
-
-            <div class="container">
-                <div class="page-inner">
-                    @yield('content')
-                </div>
-            </div>
-
-
-            {{-- <footer class="footer">
-                <div class="container-fluid d-flex justify-content-between">
-                    <nav class="pull-left">
-                        <ul class="nav">
-                            <li class="nav-item">
-                                <a class="nav-link" href="http://www.themekita.com">
-                                    ThemeKita
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#"> Help </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#"> Licenses </a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <div class="copyright">
-                        2024, made with <i class="fa fa-heart heart text-danger"></i> by
-                        <a href="http://www.themekita.com">ThemeKita</a>
-                    </div>
-                    <div>
-                        Distributed by
-                        <a target="_blank" href="https://themewagon.com/">ThemeWagon</a>.
-                    </div>
-                </div>
-            </footer> --}}
+            </nav>
         </div>
+        <!-- Sidebar End -->
 
+
+        <!-- Content Start -->
+        <div class="content">
+            <!-- Navbar Start -->
+            <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
+                <a href="{{ route('home') }}" class="navbar-brand d-flex d-lg-none me-4">
+                    <h2 class="text-primary mb-0"><i class="fa fa-hashtag"></i></h2>
+                </a>
+                <a href="#" class="sidebar-toggler flex-shrink-0">
+
+                    <i class="fa fa-bars"></i>
+                </a>
+                {{-- <form class="d-none d-md-flex ms-4">
+                    <input class="form-control border-0" type="search" placeholder="Search" />
+                </form> --}}
+                <div class="navbar-nav align-items-center ms-auto">
+
+
+                    <div class="nav-item dropdown">
+                        {{-- <img class="rounded-circle me-lg-2" src="img/user.jpg" alt=""
+                        style="width: 40px; height: 40px;"> --}}
+                        <span class="d-none d-lg-inline-flex">
+                            @auth
+                            Welcome, {{ auth()->user()->employee->name }}
+                            
+                            @endauth
+                            
+                        </span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                        <a href="#" class="dropdown-item" onclick="return confirmLogout()">Log Out</a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                        style="display: none;">
+                        @csrf
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Navbar End -->
+    
+    <!-- Sale & Revenue Start -->
+    
+    <!-- Sale & Revenue End -->
+    <div class="container-fluid pt-4 px-4">
+        @yield('content')
     </div>
-    <!--   Core JS Files   -->
-    <script src="{{ asset('assets/js/core/jquery-3.7.1.min.js') }}"></script>
-    <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
-    <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+    
+    <!-- Sales Chart Start -->
+    
+    <!-- Footer End -->
+</div>
+<!-- Content End -->
 
-    <!-- jQuery Scrollbar -->
-    <script src="{{ asset('assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
 
-    <!-- Chart JS -->
-    <script src="{{ asset('assets/js/plugin/chart.js/chart.min.js') }}"></script>
+<!-- Back to Top -->
+<a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+</div>
 
-    <!-- jQuery Sparkline -->
-    <script src="{{ asset('assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js') }}"></script>
 
-    <!-- Chart Circle -->
-    <script src="{{ asset('assets/js/plugin/chart-circle/circles.min.js') }}"></script>
 
-    <!-- Datatables -->
-    <script src="{{ asset('assets/js/plugin/datatables/datatables.min.js') }}"></script>
-
-    <!-- Bootstrap Notify -->
-    <script src="{{ asset('assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
-
-    <!-- jQuery Vector Maps -->
-    <script src="{{ asset('assets/js/plugin/jsvectormap/jsvectormap.min.js') }}"></script>
-    <script src="{{ asset('assets/js/plugin/jsvectormap/world.js') }}"></script>
-
-    <!-- Sweet Alert -->
-    <script src="{{ asset('assets/js/plugin/sweetalert/sweetalert.min.js') }}"></script>
-
-    <!-- Kaiadmin JS -->
-    <script src="{{ asset('assets/js/kaiadmin.min.js') }}"></script>
-    <script>
-        $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
-            type: "line",
-            height: "70",
-            width: "100%",
-            lineWidth: "2",
-            lineColor: "#177dff",
-            fillColor: "rgba(23, 125, 255, 0.14)",
-        });
-
-        $("#lineChart2").sparkline([99, 125, 122, 105, 110, 124, 115], {
-            type: "line",
-            height: "70",
-            width: "100%",
-            lineWidth: "2",
-            lineColor: "#f3545d",
-            fillColor: "rgba(243, 84, 93, .14)",
-        });
-
-        $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
-            type: "line",
-            height: "70",
-            width: "100%",
-            lineWidth: "2",
-            lineColor: "#ffa534",
-            fillColor: "rgba(255, 165, 52, .14)",
-        });
-    </script>
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <script src="{{ asset('assets/lib/chart/chart.min.js') }}"></script>
+    <script src="{{ asset('assets/lib/easing/easing.min.js') }}"></script>
+    <script src="{{ asset('assets/lib/waypoints/waypoints.min.js') }}"></script>
+    <script src="{{ asset('assets/lib/owlcarousel/owl.carousel.min.js') }}"></script>
+    <script src="{{ asset('assets/lib/tempusdominus/js/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/lib/tempusdominus/js/moment-timezone.min.js') }}"></script>
+    <script src="{{ asset('assets/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="{{ asset('assets/js/main.js') }}"></script>
     <script>
         function confirmLogout() {
             Swal.fire({
@@ -404,9 +199,9 @@
             return false; // Prevent default anchor behavior
         }
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @yield('javascript')
+
+    <!-- Template Javascript -->
 
 </body>
 

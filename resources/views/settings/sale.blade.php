@@ -1,7 +1,7 @@
 @extends('layouts.index')
 
 @section('content')
-    <div class="page-header">
+    <div class="page-header mb-4">
         <h3 class="fw-bold mb-3">
             Sale Settings
         </h3>
@@ -19,14 +19,13 @@
         </div>
     @endif
 
-
     <form method="POST" action="{{ route('configuration.updateSale') }}">
         @csrf
 
         <!-- Payment Methods -->
-        <div class="form-group">
-            <label>Payment Configuration</label><br>
-            <div class="d-flex">
+        <div class="form-group mb-5">
+            <label class="fw-semibold mb-3">Payment Configuration</label>
+            <div class="d-flex flex-wrap gap-3">
                 @foreach ($paymentMethods as $method)
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="payment_method[]"
@@ -41,8 +40,8 @@
         </div>
 
         <!-- Discount Configuration -->
-        <div class="form-group">
-            <div class="form-check">
+        <div class="form-group mb-5">
+            <div class="form-check mb-4">
                 <input class="form-check-input" type="checkbox" id="discount_status" name="discount_status" value="1"
                     @checked($discStatus == 1)>
                 <label class="form-check-label" for="discount_status">
@@ -51,7 +50,7 @@
             </div>
 
             <!-- Discount Information -->
-            <div class="alert alert-info mt-3" style="font-size: 14px;">
+            <div class="alert alert-info mb-4" style="font-size: 14px;">
                 <strong>Discount Information:</strong><br>
                 • <strong>Diskon Produk Tertentu:</strong> Allows setting individual discount percentages for specific
                 products. This is configured per product in the product management section.<br>
@@ -64,10 +63,9 @@
                     activated simultaneously.</span> Only one discount type can be active at a time.
             </div>
 
-
             <div class="d-flex flex-column">
                 @foreach ($discountMethods as $method)
-                    <div class="form-check mb-2">
+                    <div class="form-check mb-3">
                         <div class="d-flex align-items-center">
                             <input class="form-check-input discount-method-checkbox" type="checkbox"
                                 name="discount_method[]" id="discount_method_{{ $method->id }}"
@@ -91,12 +89,11 @@
                     </div>
                 @endforeach
             </div>
-
         </div>
 
-        <div class="form-group">
-            <label>Shipping method</label><br>
-            <div class="d-flex">
+        <div class="form-group mb-5">
+            <label class="fw-semibold mb-3">Shipping method</label>
+            <div class="d-flex flex-wrap gap-3">
                 @foreach ($shippingMethods as $method)
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="shipping_method[]"
@@ -107,14 +104,10 @@
                         </label>
                     </div>
                 @endforeach
-
-
             </div>
-
-
         </div>
 
-        <button type="submit" class="btn btn-primary mt-3">Save Configuration</button>
+        <button type="submit" class="btn btn-primary mt-4">Save Configuration</button>
     </form>
 @endsection
 

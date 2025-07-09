@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
            ConfigurationsTableSeeder::class,
            SubConfigurationsTableSeeder::class,
+           CompanySeeder::class,           
         ]);
     }
 }

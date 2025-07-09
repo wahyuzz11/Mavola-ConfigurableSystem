@@ -44,7 +44,7 @@ class UserController extends Controller
             Auth::loginUsingId($user->id, $request->remember);
 
             $request->session()->regenerate();
-            return redirect()->route('home.index');
+            return redirect()->route('home');
         }
 
         return back()->withErrors([

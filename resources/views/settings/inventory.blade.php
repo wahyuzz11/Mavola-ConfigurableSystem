@@ -1,7 +1,7 @@
 @extends('layouts.index')
 
 @section('content')
-    <div class="page-header">
+    <div class="page-header mb-4">
         <h3 class="fw-bold mb-3">
             Inventory Settings
         </h3>
@@ -23,9 +23,9 @@
     <form method="POST" action="{{ route('configuration.updateInventory') }}">
         @csrf
 
-        <div class="form-group mb-4">
-            <label class="fw-semibold">Inventory Method</label><br>
-            <div class="d-flex flex-wrap gap-3">
+        <div class="form-group mb-5">
+            <label class="fw-semibold mb-3">Inventory Method</label>
+            <div class="d-flex flex-wrap gap-3 mb-3">
                 @foreach ($inventoryMethods as $method)
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="inventory_method"
@@ -38,7 +38,7 @@
                 @endforeach
             </div>
 
-            <small class="text-muted d-block mt-2">
+            <small class="text-muted d-block">
                 <strong>Perpetual</strong>: Stock is updated in real time for every purchase and sale. Product batches are
                 recorded and tracked individually.<br>
                 <strong>Periodic</strong>: Stock is calculated at the end of a period. Transactions are recorded but stock
@@ -48,8 +48,8 @@
 
         {{-- COGS Method Section --}}
         @if ($activeInventoryTracking->code == 'INV-T-01')
-            <div class="form-group mb-4">
-                <div class="form-check mb-3">
+            <div class="form-group mb-5">
+                <div class="form-check mb-4">
                     <input class="form-check-input" type="checkbox" id="enable_cogs" name="enable_cogs" value="1"
                         @checked($activeCogsConfig->status == 1)>
                     <label class="form-check-label" for="enable_cogs">
@@ -58,10 +58,10 @@
                 </div>
 
                 @if ($activeCogsConfig->status == 1)
-                    <label class="fw-semibold">COGS Configuration</label><br>
-                    <div class="d-flex flex-column">
+                    <label class="fw-semibold mb-3">COGS Configuration</label>
+                    <div class="d-flex flex-column mb-4">
                         @foreach ($cogsMethods as $method)
-                            <div class="form-check mb-2">
+                            <div class="form-check mb-3">
                                 <div class="d-flex align-items-center">
                                     <input class="form-check-input" type="radio" name="cogs_method"
                                         id="cogs_method_{{ $method->id }}" value="{{ $method->id }}"
@@ -76,14 +76,14 @@
                         @endforeach
                     </div>
 
-                    <small class="text-muted d-block mt-3">
+                    <small class="text-muted d-block mb-3">
                         <strong>FIFO</strong> (First In First Out): The oldest purchase batch will be used first.<br>
                         <strong>LIFO</strong> (Last In First Out): The most recent purchase batch will be used first.<br>
                         <strong>Average</strong>: The cost is recalculated each time based on the weighted average of
                         purchases.<br>
                     </small>
 
-                    <small class="text-warning d-block mt-3">
+                    <small class="text-warning d-block">
                         Note: When using FIFO or LIFO, the system will determine the batch order during sales based on
                         <u>purchase date</u>, not product cost. Cost values are informational only and not used to calculate
                         profit.
@@ -100,6 +100,6 @@
             </div> --}}
         @endif
 
-        <button type="submit" class="btn btn-primary mt-3">Save Configuration</button>
+        <button type="submit" class="btn btn-primary mt-4">Save Configuration</button>
     </form>
 @endsection

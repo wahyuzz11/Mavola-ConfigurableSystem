@@ -5,11 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use App\Models\ProductBatch;
-use PhpParser\Node\Expr\Cast\String_;
-use App\Models\Configuration;
-use App\Models\SubConfiguration;
-
 
 class ProductController extends Controller
 {

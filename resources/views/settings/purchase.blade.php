@@ -1,7 +1,7 @@
 @extends('layouts.index')
 
 @section('content')
-    <div class="page-header">
+    <div class="page-header mb-4">
         <h3 class="fw-bold mb-3">
             Purchase Settings
         </h3>
@@ -19,13 +19,12 @@
         </div>
     @endif
 
-
     <form method="POST" action="{{ route('configuration.updatePurchase') }}">
         @csrf
 
-        <div class="form-group">
-            <label>Purchase payment Configuration</label><br>
-            <div class="d-flex">
+        <div class="form-group mb-5">
+            <label class="fw-semibold mb-3">Purchase payment Configuration</label>
+            <div class="d-flex flex-wrap gap-3">
                 @foreach ($paymentMethods as $method)
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="payment_method[]"
@@ -39,10 +38,9 @@
             </div>
         </div>
 
-
-        <div class="form-group">
-            <label>Shipping method</label><br>
-            <div class="d-flex">
+        <div class="form-group mb-5">
+            <label class="fw-semibold mb-3">Shipping method</label>
+            <div class="d-flex flex-wrap gap-3">
                 @foreach ($receivingMethods as $method)
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="receiving_method[]"
@@ -53,18 +51,11 @@
                         </label>
                     </div>
                 @endforeach
-
-
             </div>
-
-
         </div>
 
-        <button type="submit" class="btn btn-primary mt-3">Save Configuration</button>
-
+        <button type="submit" class="btn btn-primary mt-4">Save Configuration</button>
     </form>
-
-
 
     <!-- Debt Warning Modal -->
     <div class="modal fade" id="debtWarningModal" tabindex="-1" aria-hidden="true">
@@ -108,7 +99,6 @@
         </div>
     </div>
 @endsection
-
 
 @section('javascript')
     <script>

@@ -182,40 +182,46 @@
         const hasCashback = discountMethods.some(d => d.code === 'DISC-03' && d.status === 1);
 
         // Initialize Select2 for Products - Load all products initially
-        $('#productSelect').select2({
-            placeholder: "Search and select a product",
-            allowClear: true,
-            ajax: {
-                url: '{{ route('sales.query') }}',
-                dataType: 'json',
-                delay: 250,
-                data: function(params) {
-                    return {
-                        search: params.term || '', // Allow empty search to show all
-                        page: params.page || 1
-                    };
+        $(document).ready(function() {
+
+            $('#productSelect').select2({
+                placeholder: "Search and select a product",
+                width: 'resolve',
+                allowClear: true,
+                ajax: {
+                    url: '{{ route('sales.query') }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            search: params.term || '', // Allow empty search to show all
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data.map(function(item) {
+                                return {
+                                    id: item.id,
+                                    text: item.product_name,
+                                    price: item.price,
+                                    stock: item.total_stock
+                                };
+                            })
+                        };
+                    },
+                    cache: true
                 },
-                processResults: function(data) {
-                    return {
-                        results: data.map(function(item) {
-                            return {
-                                id: item.id,
-                                text: item.product_name,
-                                price: item.price,
-                                stock: item.total_stock
-                            };
-                        })
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 0 // Allow showing all products without typing
+                minimumInputLength: 0 // Allow showing all products without typing
+            });
         });
+
 
         // Initialize Select2 for Customers - Load all customers initially
         $('#customerName').select2({
             placeholder: "Search and select customer",
             allowClear: true,
+            width: 'resolve',
             ajax: {
                 url: '{{ route('findCustomer') }}',
                 dataType: 'json',
