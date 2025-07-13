@@ -55,6 +55,8 @@ class PurchaseController extends Controller
     public function create()
     {
 
+
+        
         $purchaseMethods = SubConfiguration::with('configuration')
             ->whereHas('configuration', function ($query) {
                 $query->where('name', 'purchase_payment');
@@ -66,9 +68,10 @@ class PurchaseController extends Controller
             })
             ->get();
         $activeMethods = $receiveMethods->where('status', 1);
+        $expiredSettings =  SubConfiguration::where('code',"EXP-01")->first();
         $invoiceNumber = $this->generateInvoiceNumber();
 
-        return view('purchases.create', compact('invoiceNumber', 'receiveMethods', 'purchaseMethods', 'activeMethods'));
+        return view('purchases.create', compact('invoiceNumber', 'receiveMethods', 'purchaseMethods', 'activeMethods','expiredSettings'));
     }
 
 

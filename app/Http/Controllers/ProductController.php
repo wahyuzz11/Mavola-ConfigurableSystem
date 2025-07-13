@@ -28,7 +28,8 @@ class ProductController extends Controller
         $configController = new ConfigurationController();
         $cogsMethod = $configController->GetOneConfigMethod("cogs_method");
         $inventoryTracking = $configController->GetOneConfigMethod("inventory_tracking_method");
-        return view('products.addProduct', compact('categories', 'cogsMethod', 'inventoryTracking'));
+        $expiredDateSetting = $configController->getOneConfigMethod("expired_date_settings");
+        return view('products.addProduct', compact('categories', 'cogsMethod', 'inventoryTracking', 'expiredDateSetting'));
     }
 
     /**
@@ -37,31 +38,41 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         try {
+
             $configController = new ConfigurationController();
-            $cogsMethod = $configController->GetOneConfigMethod("cogs_method");
+            // $cogsMethod = $configController->GetOneConfigMethod("cogs_method");
+            // $expiredActive = $configController->GetOneConfigMethod("expiredActive");
             $newProduct = new Product();
             $newProduct->product_name = $request->get("name");
             $newProduct->description = $request->get("description");
             $newProduct->minimum_total_stock = $request->get("minimum_total_stock");
             $newProduct->total_stock = $request->get("total_stock");
             $newProduct->unit_name = $request->get("unit_name");
-            $newProduct->expired_date_settings = $request->get("expired_date_settings");
-            if ($cogsMethod == 'FIFO' || $cogsMethod == 'avarage') {
-                $newProduct->cost = 0;
+
+            if ($request->has("cost")) {
+                $newProduct->cost = $request->get("cost");
             }
 
+            if ($request->has(["expired_active_setting", "expired_date_setting"])) {
+                $newProduct->expired_date_active = $request->get("expired_active_setting");
+                $newProduct->expired_date_setting = $request->get("expired_date_setting");
+            } else {
+                $newProduct->expired_date_active = 0;
+            }
 
             if ($request->hasFile('file_image')) {
                 $file = $request->file('file_image');
                 $filename = time() . "_" . preg_replace('/\s+/', '_', $file->getClientOriginalName());
                 $file->move('assets/img/product', $filename);
             }
+
             $newProduct->image = isset($filename) ? $filename : null;
             $newProduct->price = $request->get('price');
             $newProduct->categories_id = $request->get('categories_id');
             $newProduct->save();
 
-            return redirect(url()->previous())->with('status', 'Product data has been successfully created!');
+            //  return redirect()->back()->with('success', 'Configuration updated successfully!');
+            return redirect(url()->previous())->with('success', 'Product data has been successfully created!');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->with('error', 'Failed to store: ' . $e->getMessage());
         }
@@ -77,7 +88,8 @@ class ProductController extends Controller
         $configController = new ConfigurationController();
         $cogsMethod = $configController->GetOneConfigMethod("cogs_method");
         $inventoryTracking = $configController->GetOneConfigMethod("inventory_tracking_method");
-        return view('products.edit', compact('product', 'categories', 'cogsMethod', 'inventoryTracking'));
+        $expiredDateSetting = $configController->getOneConfigMethod("expired_date_settings");
+        return view('products.edit', compact('product', 'categories', 'cogsMethod', 'inventoryTracking','expiredDateSetting'));
     }
 
     public function edit(Product $product) {}
@@ -102,18 +114,33 @@ class ProductController extends Controller
             $updatedProduct->price = $request->price;
 
             // Get configuration
-            $configController = new ConfigurationController();
-            $cogsMethod = $configController->GetOneConfigMethod("cogs_method");
-            $inventoryTracking = $configController->GetOneConfigMethod("inventory_tracking_method");
+            // $configController = new ConfigurationController();
+            // $cogsMethod = $configController->GetOneConfigMethod("cogs_method");
+            // $inventoryTracking = $configController->GetOneConfigMethod("inventory_tracking_method");
 
             // Update stock only if periodic inventory tracking
-            if ($inventoryTracking == 'periodic') {
-                $updatedProduct->total_stock = $request->total_stock;
+            // if ($inventoryTracking == 'periodic') {
+            //     $updatedProduct->total_stock = $request->total_stock;
+            // }
+
+            // // Update cost if needed
+            // if ($cogsMethod == 'standard' || $inventoryTracking == 'periodic') {
+            //     $updatedProduct->cost = $request->cost;
+            // }
+
+            if ($request->has('cost')) {
+                $updatedProduct->cost = $request->get('cost');
             }
 
-            // Update cost if needed
-            if ($cogsMethod == 'standard' || $inventoryTracking == 'periodic') {
-                $updatedProduct->cost = $request->cost;
+            if ($request->has('total_stock')) {
+                $updatedProduct->total_stock = $request->get('total_stock');
+            }
+
+            if ($request->has(['expired_active_setting', 'expired_date_setting'])) {
+                $updatedProduct->expired_date_active = $request->get('expired_active_setting');
+                $updatedProduct->expired_date_setting = $request->get('expired_date_setting');
+            } else {
+                $updatedProduct->expired_date_active = 0;
             }
 
             // Handle file upload

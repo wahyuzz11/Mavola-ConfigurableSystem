@@ -22,6 +22,7 @@
             </div>
         @endif
 
+
         <h2>Purchase Order</h2>
         <form id="purchaseOrderForm" method="POST" action="{{ route('purchases.store') }}">
             @csrf
@@ -42,6 +43,7 @@
                     <label for="supplierName" class="form-label">Supplier Name</label>
                     <select id="supplierName" class="form-select" required name="suppliers">
                         <option value="">Select a supplier</option>
+
                     </select>
                 </div>
                 <div class="col-md-6">
@@ -52,32 +54,18 @@
                 </div>
             </div>
 
-            @if ($expiredSettings->status = 1)
-                <!-- Expiration Date Information Alert -->
-                <div class="alert alert-info" role="alert">
-                    <h6 class="alert-heading">
-                        <i class="fas fa-clock"></i> Expiration Date Tracking
-                    </h6>
-                    <p class="mb-0">
-                        Enter the number of days after purchase date for each product to automatically calculate expiration
-                        dates and track product freshness.
-                    </p>
-                </div>
-            @endif
+
+
+
 
 
             <!-- Items Table for Selected Products -->
             <table class="table table-bordered mt-3" id="itemsTable">
-                <thead class="table-light">
+                <thead>
                     <tr>
                         <th>Product Name</th>
                         <th>Quantity</th>
                         <th>Unit Price</th>
-                        <th>Days to Expire</th>
-                        @if ($expiredSettings->status = 1)
-                            <th>Expiration Date</th>
-                        @endif
-                        <th>Status</th>
                         <th>Total</th>
                         <th>Action</th>
                     </tr>
@@ -88,37 +76,16 @@
             </table>
             <input type="hidden" id="purchasedProductsData" name="purchased_products">
 
-            <!-- Expiration Status Legend -->
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h6 class="card-title">Expiration Status Legend:</h6>
-                    <div class="row">
-                        <div class="col-md-3">
-                            <span class="badge bg-success">● Fresh (30+ days)</span>
-                        </div>
-                        <div class="col-md-3">
-                            <span class="badge bg-warning">● Caution (8-30 days)</span>
-                        </div>
-                        <div class="col-md-3">
-                            <span class="badge bg-danger">● Critical (1-7 days)</span>
-                        </div>
-                        <div class="col-md-3">
-                            <span class="badge bg-dark">● Expired</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Grand Total -->
             <div class="row mb-3">
                 <div class="col-md-4 offset-md-8">
                     <label for="grandTotal" class="form-label">Grand Total</label>
-                    <div class="input-group">
-                        <span class="input-group-text">Rp</span>
+                    <div class="input-group"> <span class="input-group-text">Rp</span>
                         <input type="text" class="form-control" id="grandTotal" name="grand_total" readonly>
                     </div>
                 </div>
             </div>
+
 
             <div class="row mb-3">
                 <div class="form-group">
@@ -131,15 +98,17 @@
                             <div class="form-check me-3">
                                 <input class="form-check-input receive-method-radio" type="radio" name="receive_method"
                                     id="receiveMethod{{ $method->id }}" value="{{ $method->code }}"
-                                    {{ $method->status == 1 ? 'checked' : '' }} data-code="{{ $method->code }}">
-                                <label class="form-check-label" for="receiveMethod{{ $method->id }}">
-                                    {{ $method->name }}
+                                    {{ $method->status == 1 ? 'checked' : '' }} data-code="{{ $method->code }}" <label
+                                    class="form-check-label" for="receiveMethod{{ $method->id }}">
+                                {{ $method->name }}
                                 </label>
                             </div>
                         @endforeach
                     </div>
                 </div>
             </div>
+
+
 
             <div class="row mb-3" id="deliveryCostContainer" style="display: none;">
                 <div class="col-md-6">
@@ -148,6 +117,7 @@
                         <span class="input-group-text">Rp</span>
                         <input type="number" class="form-control" id="delivery_cost" name="delivery_cost" min="0">
                     </div>
+
                 </div>
             </div>
 
@@ -165,13 +135,17 @@
                 </div>
             </div>
 
+
             <!-- Due Date Picker - Initially hidden -->
             <div class="row mb-3" id="dueDateContainer" style="display: none;">
                 <div class="form-group">
                     <label for="due_date">Due Date</label>
                     <input type="date" class="form-control" id="due_date" name="due_date">
+                    {{-- min="{{ now()->format('Y-m-d') }}" > --}}
                 </div>
             </div>
+
+
 
             <button type="submit" class="btn btn-success">Submit Order</button>
         </form>
@@ -203,6 +177,7 @@
             });
         });
 
+
         // Initialize Select2 for product dropdown
         $('#productSelect').select2({
             placeholder: "Search and select a product",
@@ -231,87 +206,6 @@
 
         let purchasedProducts = [];
 
-        // Expiration Date Functions
-        function calculateExpirationDate(orderDate, expireDays) {
-            if (!expireDays || expireDays <= 0) return 'N/A';
-
-            const orderDateObj = new Date(orderDate);
-            const expirationDate = new Date(orderDateObj);
-            expirationDate.setDate(orderDateObj.getDate() + parseInt(expireDays));
-
-            return expirationDate.toLocaleDateString('id-ID', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        }
-
-        function getDaysUntilExpiration(orderDate, expireDays) {
-            if (!expireDays || expireDays <= 0) return null;
-
-            const orderDateObj = new Date(orderDate);
-            const expirationDate = new Date(orderDateObj);
-            expirationDate.setDate(orderDateObj.getDate() + parseInt(expireDays));
-
-            const today = new Date();
-            const timeDiff = expirationDate - today;
-            const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
-            return daysDiff;
-        }
-
-        function getExpirationStatus(orderDate, expireDays) {
-            const days = getDaysUntilExpiration(orderDate, expireDays);
-            if (days === null) return {
-                class: '',
-                text: ''
-            };
-
-            if (days < 0) {
-                return {
-                    class: 'badge bg-dark',
-                    text: `Expired ${Math.abs(days)} days ago`
-                };
-            }
-            if (days === 0) {
-                return {
-                    class: 'badge bg-danger',
-                    text: 'Expires today'
-                };
-            }
-            if (days <= 7) {
-                return {
-                    class: 'badge bg-danger',
-                    text: `${days} days left`
-                };
-            }
-            if (days <= 30) {
-                return {
-                    class: 'badge bg-warning',
-                    text: `${days} days left`
-                };
-            }
-            return {
-                class: 'badge bg-success',
-                text: `${days} days left`
-            };
-        }
-
-        function updateExpirationInfo() {
-            const orderDate = $('#orderDate').val();
-            if (!orderDate) return;
-
-            $('#itemsTable tbody tr').each(function() {
-                const row = $(this);
-                const expireDays = parseInt(row.find('.expire-days').val()) || 0;
-                const expirationDate = calculateExpirationDate(orderDate, expireDays);
-                const status = getExpirationStatus(orderDate, expireDays);
-
-                row.find('.expiration-date').text(expirationDate);
-                row.find('.expiration-status').attr('class', status.class).text(status.text);
-            });
-        }
-
         // Handle product selection
         $('#productSelect').on('select2:select', function(e) {
             const data = e.params.data;
@@ -323,46 +217,57 @@
                 quantityInput.val(newQuantity).trigger('change');
             } else {
                 const newRow = `
-                <tr data-product-id="${data.id}">
-                    <td>${data.text}</td>
-                    <td><input type="number" class="form-control quantity" min="1" value="1" required></td>
-                    <td>
-                        <div class="input-group">
-                            <span class="input-group-text">Rp</span>
-                            <input type="number" class="form-control unit-price" value="${data.price.toFixed(2)}" step="500">
-                        </div>
-                    </td>
-                    <td>
-                        <input type="number" class="form-control expire-days" min="0" value="0" placeholder="Days">
-                    </td>
-                    <td class="expiration-date">N/A</td>
-                    <td><span class="expiration-status"></span></td>
-                    <td class="total-price">${data.price.toFixed(2)}</td>
-                    <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
-                </tr>`;
+            <tr data-product-id="${data.id}">
+                <td>${data.text}</td>
+                <td><input type="number" class="form-control quantity" min="1" value="1" required></td>
+                <td>
+                    <div class="input-group">
+                    <span class="input-group-text">Rp</span>
+                    <input type="number" class="form-control unit-price" value="${data.price.toFixed(2)}" step="500"></td>
+                </div>
+                </td>
+               <td class="total-price">${data.price.toFixed(2)}</td>
+                <td><button type="button" class="btn btn-danger remove-row">Remove</button></td>
+            </tr>`;
                 $('#itemsTable tbody').append(newRow);
 
                 purchasedProducts.push({
                     product_id: data.id,
                     quantity: 1,
                     purchase_price: data.price,
-                    total_price: data.price,
-                    expire_days: 0
+                    total_price: data.price
                 });
             }
 
             $('#productSelect').val(null).trigger('change');
             updateGrandTotal();
-            updateExpirationInfo();
         });
 
-        // Update purchased products array when any field changes
-        $('#itemsTable').on('change', '.quantity, .unit-price, .expire-days', function() {
+        function formatCurrency(amount) {
+            return 'Rp ' + parseFloat(amount).toLocaleString('id-ID', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function parseCurrency(currencyString) {
+            return parseFloat(currencyString.replace(/[^0-9.]/g, ''));
+        }
+
+        function formatCurrencyInput(input) {
+            input.value = formatCurrency(input.value);
+        }
+
+        function clearCurrencyFormat(input) {
+            input.value = parseCurrency(input.value);
+        }
+
+        // Update purchased products array when quantity changes
+        $('#itemsTable').on('change', '.quantity, .unit-price', function() {
             const row = $(this).closest('tr');
             const productId = row.data('product-id');
             const quantity = parseInt(row.find('.quantity').val()) || 0;
             const unitPrice = parseFloat(row.find('.unit-price').val()) || 0;
-            const expireDays = parseInt(row.find('.expire-days').val()) || 0;
             const totalPrice = (quantity * unitPrice).toFixed(2);
 
             row.find('.total-price').text(totalPrice);
@@ -374,18 +279,11 @@
                     product_id: productId,
                     quantity: quantity,
                     purchase_price: unitPrice,
-                    total_price: totalPrice,
-                    expire_days: expireDays
+                    total_price: totalPrice
                 };
             }
 
             updateGrandTotal();
-            updateExpirationInfo();
-        });
-
-        // Update expiration info when order date changes
-        $('#orderDate').on('change', function() {
-            updateExpirationInfo();
         });
 
         // Remove row
@@ -430,6 +328,8 @@
                 formData.due_date = $('#due_date').val();
             }
 
+
+            
             // Add as hidden field
             $('<input>').attr({
                 type: 'hidden',
@@ -439,7 +339,6 @@
 
             return true;
         });
-
         // Initialize supplier select
         $('#supplierName').select2({
             placeholder: "Search for a supplier",

@@ -80,7 +80,6 @@ class ConfigurationController extends Controller
 
         $activeExpireConfig = Subconfiguration::where('code', 'EXP-01')->first();
 
-
         $activeCogsConfig = Configuration::where('code', 'COGS')->first();
         $cogsMethods = SubConfiguration::with('configuration')
             ->whereHas('configuration', function ($query) {
@@ -100,10 +99,12 @@ class ConfigurationController extends Controller
         DB::beginTransaction();
 
         try {
+
+            // query data lengkap konfigurasi yang dipilih
             $newInventoryMethod = SubConfiguration::findOrFail($request->input('inventory_method'));
 
             // If switching to periodic
-            if (strtolower($newInventoryMethod->name) === 'periodic') {
+            if (strtolower($newInventoryMethod->code) === 'INV-T-02') {
                 $activeBatch = ProductBatch::where('stock', '>', 0)
                     ->where('empty_status', 0)
                     ->exists();
@@ -124,6 +125,7 @@ class ConfigurationController extends Controller
             }
 
             // Update inventory method
+            // reset semua status konfigurasi ke 0
             SubConfiguration::whereHas('configuration', function ($query) {
                 $query->where('name', 'inventory_tracking_method');
             })->update(['status' => 0]);
@@ -139,20 +141,14 @@ class ConfigurationController extends Controller
 
                 // Update COGS activation
 
+                // $enableCogs = $request->has('enable_cogs') ? 1 : 0;
 
-                $enableCogs = $request->has('enable_cogs') ? 1 : 0;
                 SubConfiguration::whereHas('configuration', function ($query) {
                     $query->where('name', 'cogs_method');
                 })->update(['status' => 0]); // First disable all
 
-                if ($enableCogs) {
-                    // Update selected COGS method
-                    Configuration::where('code', 'COGS')->update(['status' => 1]);
-                    SubConfiguration::where('id', $request->input('cogs_method'))
-                        ->update(['status' => 1]);
-                } else {
-                    Configuration::where('code', 'COGS')->update(['status' => 0]);
-                }
+                SubConfiguration::where('id', $request->input('cogs_method'))
+                    ->update(['status' => 1]);
             }
 
             DB::commit();
@@ -336,6 +332,8 @@ class ConfigurationController extends Controller
         }
     }
 
+
+    // berfungsi untuk mengambil subconfig yang aktif
     public function getOneConfigMethod($name)
     {
         try {
@@ -351,6 +349,12 @@ class ConfigurationController extends Controller
             throw new Exception("Error in" . __FUNCTION__ . ": " . $e->getMessage());
         }
     }
+
+
+ 
+
+
+
 
     public function checkBatchStatus()
     {

@@ -65,11 +65,30 @@
 
             </div>
             <div class="col-md-7 col-lg-6">
-                <div class="form-group">
-                    <label for="expired_day">Expiration date</label>
-                    <input type="number" class="form-control" id="expired_date" name="expired_date_settings" min="1"
-                        value="{{ $product->expired_date_settings ?? 0 }}">
-                </div>
+
+                @if ($expiredDateSetting != null && $inventoryTracking == 'perpetual')
+                    <div class="form-group">
+
+                        <h5 class="card-title">Product Expiration Settings</h5>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" @if ($product->expired_date_active == 1) checked @endif
+                                value="1" id="expired_active" name="expired_active_setting">
+                            <label class="form-check-label" for="expired_active">
+                                Activate expiration date for this product
+                            </label>
+                        </div>
+
+                        
+                        <div id="expiration_settings" @if ($product->expired_date_active != 1) style="display: none;" @endif >
+                            <label for="expired_date" class="form-label">Expiration date settings (days)</label>
+                            <input type="number" class="form-control" id="expired_date" name="expired_date_setting"
+                                min="1" placeholder="Enter number of days"
+                                value="{{ $product->expired_date_setting ?? 0 }}">
+                            <div class="form-text">Number of days after purchase date when the product expires</div>
+                        </div>
+                    </div>
+                @endif
 
                 <div class="form-group">
                     <label for="price">Price</label>
@@ -91,4 +110,43 @@
             <button type="submit" class="btn btn-primary">Update</button>
         </div>
     </form>
+@endsection
+
+
+@section('javascript')
+    <script>
+        const expiredActive = document.getElementById("expired_active");
+        const expiredDateDiv = document.getElementById("expiration_settings");
+
+
+        expiredActive.addEventListener('change', function() {
+            if (this.checked) {
+                expiredDateDiv.style.display = 'block';
+            } else {
+                expiredDateDiv.style.display = 'none';
+
+                document.getElementById('expired_date').value = '';
+            }
+        });
+    </script>
+
+
+    {{-- <script>
+        // Get references to the checkbox and the expiration settings div
+        const expiredActiveCheckbox = document.getElementById('expired_active');
+        const expirationSettingsDiv = document.getElementById('expiration_settings');
+
+        // Add event listener to the checkbox
+        expiredActiveCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                // Show the expiration settings div
+                expirationSettingsDiv.style.display = 'block';
+            } else {
+                // Hide the expiration settings div
+                expirationSettingsDiv.style.display = 'none';
+                // Optional: Clear the input value when hiding
+                document.getElementById('expired_date').value = '';
+            }
+        });
+    </script> --}}
 @endsection
