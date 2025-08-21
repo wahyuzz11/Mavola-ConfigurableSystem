@@ -110,7 +110,6 @@ class ProductController extends Controller
             $updatedProduct->categories_id = $request->categories_id;
             $updatedProduct->minimum_total_stock = $request->minimum_total_stock;
             $updatedProduct->unit_name = $request->unit_name;
-            $updatedProduct->expired_date_settings = $request->expired_date_settings;
             $updatedProduct->price = $request->price;
 
             // Get configuration

@@ -20,6 +20,7 @@ class Product extends Model
         'total_stock',
         'unit_name',
         'expired_date_settings',
+        'expire_date_active',
         'cost',
         'categories_id',
         'starting_stock_periodic',

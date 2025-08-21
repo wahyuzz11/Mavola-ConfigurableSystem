@@ -56,7 +56,7 @@ class PurchaseController extends Controller
     {
 
 
-        
+
         $purchaseMethods = SubConfiguration::with('configuration')
             ->whereHas('configuration', function ($query) {
                 $query->where('name', 'purchase_payment');
@@ -68,10 +68,12 @@ class PurchaseController extends Controller
             })
             ->get();
         $activeMethods = $receiveMethods->where('status', 1);
-        $expiredSettings =  SubConfiguration::where('code',"EXP-01")->first();
+        $expiredSetting =  SubConfiguration::where('code', 'EXP-01')->first();
         $invoiceNumber = $this->generateInvoiceNumber();
 
-        return view('purchases.create', compact('invoiceNumber', 'receiveMethods', 'purchaseMethods', 'activeMethods','expiredSettings'));
+
+        // return view('purchases.create', dd(compact('invoiceNumber', 'receiveMethods', 'purchaseMethods', 'activeMethods', 'expiredSetting')));
+        return view('purchases.create', compact('invoiceNumber', 'receiveMethods', 'purchaseMethods', 'activeMethods', 'expiredSetting'));
     }
 
 
@@ -79,15 +81,20 @@ class PurchaseController extends Controller
     {
         DB::beginTransaction();
         try {
-            $formData = json_decode($request->form_data, true);
 
             $request->validate([
-                'order_date' => 'required|date',
-                'invoice_number' => 'required|string',
-                'suppliers' => 'required|exists:suppliers,id',
-                'grand_total' => 'required|numeric',
-                'form_data' => 'required|json'
+                'form_data' => 'requierd|json'
             ]);
+
+            $formData = json_decode($request->form_data, true);
+
+            // $request->validate([
+            //     'order_date' => 'required|date',
+            //     'invoice_number' => 'required|string',
+            //     'suppliers' => 'required|exists:suppliers,id',
+            //     'grand_total' => 'required|numeric',
+            //     'form_data' => 'required|json'
+            // ]);
 
             // Conditional validation
             if ($formData['receive_method'] === 'RE-02' && empty($formData['delivery_cost'])) {
@@ -183,9 +190,12 @@ class PurchaseController extends Controller
 
         // Calculate dates
         $purchaseDate = Carbon::parse($detail->purchase->purchase_date);
-        $expiredDate = $purchaseDate->copy()->addDays($product->expired_date_settings);
-        $bestBeforeDate = $purchaseDate->copy()->addDays($product->best_before_date_settings);
-
+        if($detail->expire_days != null){
+            $expiredDate  = $purchaseDate->copy()->addDays($detail->expire_days);
+        }else{
+            $expiredDate = null;
+        }
+      
         // Create product batch
         $batchCtrl = new ProductBatchController();
         $productBatch = new ProductBatch();
@@ -193,7 +203,6 @@ class PurchaseController extends Controller
         $productBatch->stock = $detail->quantity;
         $productBatch->purchase_date = $purchaseDate;
         $productBatch->expired_date = $expiredDate;
-        $productBatch->best_before_date = $bestBeforeDate;
         $productBatch->empty_status = 0;
         $productBatch->cost_per_batch = $detail->subtotal / $detail->quantity;
         $productBatch->products_id = $product->id;
@@ -208,10 +217,21 @@ class PurchaseController extends Controller
     protected function processPurchaseProduct(Purchase $purchase, array $productData)
     {
         try {
+            $purchaseDate = Carbon::parse($purchase->purchase_date);
+            if ($productData['expire_days'] != null) {
+                $expireDays  = $productData['expire_days'];
+                $expiredDate = $purchaseDate->copy()->addDays($expireDays);
+            } else {
+                $expireDays = null;
+                $expiredDate = null;
+            }
+
+
             $purchaseDetail = PurchaseDetail::create([
                 'purchases_id' => $purchase->id,
                 'products_id' => $productData['product_id'],
                 'quantity' => $productData['quantity'],
+                'expire_days'=> $expireDays,
                 'purchase_price' => $productData['purchase_price'],
                 'subtotal' => $productData['total_price'],
                 'created_at' => now(),
@@ -224,14 +244,9 @@ class PurchaseController extends Controller
                 $configCtrl = new ConfigurationController();
                 $inventoryMethod = $configCtrl->getOneConfigMethod('inventory_tracking_method');
                 $cogsMethod = $configCtrl->getOneConfigMethod('cogs_method');
-
                 // Find the product
                 $product = Product::findOrFail($purchaseDetail->products_id);
-
                 // Calculate dates
-                $purchaseDate = Carbon::parse($purchase->purchase_date);
-                $expiredDate = $purchaseDate->copy()->addDays($product->expired_date_settings);
-
                 // Create product batch
                 $batchCtrl = new ProductBatchController();
                 $productBatch = new ProductBatch();
@@ -360,7 +375,7 @@ class PurchaseController extends Controller
 
         $products = Product::query()
             ->where('product_name', 'LIKE', '%' . $search . '%')
-            ->select('id', 'product_name', 'cost as price', 'total_stock')
+            ->select('id', 'product_name', 'cost as price', 'total_stock', 'expired_date_active as expired', 'expired_date_setting as expired_date')
             ->limit(10)
             ->get();
 

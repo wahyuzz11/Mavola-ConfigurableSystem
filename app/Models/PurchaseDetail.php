@@ -17,6 +17,7 @@ class PurchaseDetail extends Model
         'quantity',
         'created_at',
         'recalculate_date',
+        'expire_days',
         'purchases_id',
         'products_id',
         'updated_at',

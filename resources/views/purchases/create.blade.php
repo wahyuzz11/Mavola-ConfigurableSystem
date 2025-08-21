@@ -52,7 +52,7 @@
                 </div>
             </div>
 
-            @if ($expiredSettings->status = 1)
+            @if ($expiredSetting->status == 1)
                 <!-- Expiration Date Information Alert -->
                 <div class="alert alert-info" role="alert">
                     <h6 class="alert-heading">
@@ -73,11 +73,11 @@
                         <th>Product Name</th>
                         <th>Quantity</th>
                         <th>Unit Price</th>
-                        <th>Days to Expire</th>
-                        @if ($expiredSettings->status = 1)
+                        @if ($expiredSetting->status == 1)
+                            <th>Days to Expire</th>
                             <th>Expiration Date</th>
                         @endif
-                        <th>Status</th>
+                        {{-- <th>Status</th> --}}
                         <th>Total</th>
                         <th>Action</th>
                     </tr>
@@ -89,7 +89,7 @@
             <input type="hidden" id="purchasedProductsData" name="purchased_products">
 
             <!-- Expiration Status Legend -->
-            <div class="card mb-3">
+            {{-- <div class="card mb-3">
                 <div class="card-body">
                     <h6 class="card-title">Expiration Status Legend:</h6>
                     <div class="row">
@@ -107,7 +107,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Grand Total -->
             <div class="row mb-3">
@@ -123,7 +123,7 @@
             <div class="row mb-3">
                 <div class="form-group">
                     <label>Receive Method</label><br>
-                    <div class="d-flex">
+                    ~ <div class="d-flex">
                         @foreach ($receiveMethods as $index => $method)
                             @if ($activeMethods->count() == 1 && $method->status != 1)
                                 @continue
@@ -180,6 +180,8 @@
 
 @section('javascript')
     <script>
+        const expiredActive = {{ $expiredSetting->status }};
+
         document.addEventListener('DOMContentLoaded', function() {
             const radioButtons = document.querySelectorAll('.receive-method-radio');
             const deliveryCostContainer = document.getElementById('deliveryCostContainer');
@@ -221,7 +223,9 @@
                             id: product.id,
                             text: product.product_name,
                             price: product.price,
-                            stock: product.total_stock
+                            stock: product.total_stock,
+                            expired: product.expired,
+                            expired_date: product.expired_date
                         }))
                     };
                 },
@@ -332,22 +336,32 @@
                             <input type="number" class="form-control unit-price" value="${data.price.toFixed(2)}" step="500">
                         </div>
                     </td>
-                    <td>
-                        <input type="number" class="form-control expire-days" min="0" value="0" placeholder="Days">
-                    </td>
-                    <td class="expiration-date">N/A</td>
-                    <td><span class="expiration-status"></span></td>
+                        ${expiredActive === 1 ? 
+                        (data.expired === 1 ? `
+                                    <td>
+                                        <input type="number" class="form-control expire-days" min="0" value="${data.expired_date}" placeholder="Days">
+                                    </td>
+                                    <td class="expiration-date">N/A</td>
+                                         ` : `
+                                    <td>Product doesn't support expiration tracking</td>
+                                    <td>N/A</td>
+                                     `) 
+                                 : `
+                                    `
+                                }
                     <td class="total-price">${data.price.toFixed(2)}</td>
                     <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
                 </tr>`;
                 $('#itemsTable tbody').append(newRow);
+
+                const defaultExpireDays = (expiredActive === 1 && data.expired === 1) ? 0 : null;
 
                 purchasedProducts.push({
                     product_id: data.id,
                     quantity: 1,
                     purchase_price: data.price,
                     total_price: data.price,
-                    expire_days: 0
+                    expire_days: defaultExpireDays
                 });
             }
 

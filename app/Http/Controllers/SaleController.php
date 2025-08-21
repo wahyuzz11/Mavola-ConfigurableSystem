@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use Exception;
 use App\Models\Configuration;
 use App\Models\SubConfiguration;
-use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Product;
@@ -122,41 +121,26 @@ class SaleController extends Controller
 
             $formData = json_decode($request->form_data, true);
 
-            // Additional validation for the actual data
-            if (empty($formData['sale_products'])) {
-                throw new \Exception('No products selected');
-            }
-
-            if (empty($formData['customers'])) {
-                throw new \Exception('Customer is required');
-            }
-
-            // Validate customer exists
-            $customer = \App\Models\Customer::find($formData['customers']);
-            if (!$customer) {
-                throw new \Exception('Selected customer not found');
-            }
-
             // Get configuration once
             $configCtrl = new ConfigurationController();
             $cogsMethod = $configCtrl->getOneConfigMethod('cogs_method');
             $inventoryMethod = $configCtrl->getOneConfigMethod('inventory_tracking_method');
 
             // Bulk load products for better performance
-            $productIds = collect($formData['sale_products'])->pluck('product_id');
-            $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+            // $productIds = collect($formData['sale_products'])->pluck('product_id');
+            // $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
 
-            // Validate products and stock before processing
-            foreach ($formData['sale_products'] as $productData) {
-                $product = $products[$productData['product_id']] ?? null;
-                if (!$product) {
-                    throw new \Exception("Product with ID {$productData['product_id']} not found");
-                }
+            // // Validate products and stock before processing
+            // foreach ($formData['sale_products'] as $productData) {
+            //     $product = $products[$productData['product_id']] ?? null;
+            //     if (!$product) {
+            //         throw new \Exception("Product with ID {$productData['product_id']} not found");
+            //     }
 
-                if ($product->total_stock < $productData['quantity']) {
-                    throw new \Exception("Insufficient stock for product: {$product->product_name}. Available: {$product->total_stock}, Requested: {$productData['quantity']}");
-                }
-            }
+            //     if ($product->total_stock < $productData['quantity']) {
+            //         throw new \Exception("Insufficient stock for product: {$product->product_name}. Available: {$product->total_stock}, Requested: {$productData['quantity']}");
+            //     }
+            // }
 
 
             if ($formData['delivery_method'] == 'DEL-02') {
@@ -192,7 +176,9 @@ class SaleController extends Controller
 
             // Process each product
             foreach ($formData['sale_products'] as $productData) {
-                $product = $products[$productData['product_id']];
+
+                // $product = $products[$productData['product_id']];
+                $product = Product::where($productData['product_id']);
                 $this->processSaleProduct($sale, $productData, $product, $cogsMethod, $inventoryMethod);
             }
 

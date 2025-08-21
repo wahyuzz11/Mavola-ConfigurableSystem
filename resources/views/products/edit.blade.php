@@ -1,6 +1,21 @@
 @extends('layouts.index')
 
 @section('content')
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-exclamation-circle me-2"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-exclamation-circle me-2"></i> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    
     <form method="POST" action="{{ route('products.update', $product->id) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
@@ -8,8 +23,8 @@
             <div class="col-md-7 col-lg-6">
                 <div class="form-group">
                     <label for="name">Product Name</label>
-                    <input type="text" class="form-control" id="name" placeholder="Enter product name" name="name"
-                        value="{{ $product->product_name ?? '' }}">
+                    <input type="text" class="form-control" id="name" placeholder="Enter product name"
+                        name="name" value="{{ $product->product_name ?? '' }}">
                 </div>
 
                 <div class="form-group">
@@ -79,8 +94,8 @@
                             </label>
                         </div>
 
-                        
-                        <div id="expiration_settings" @if ($product->expired_date_active != 1) style="display: none;" @endif >
+
+                        <div id="expiration_settings" @if ($product->expired_date_active != 1) style="display: none;" @endif>
                             <label for="expired_date" class="form-label">Expiration date settings (days)</label>
                             <input type="number" class="form-control" id="expired_date" name="expired_date_setting"
                                 min="1" placeholder="Enter number of days"
@@ -99,8 +114,8 @@
                 @if ($cogsMethod == 'avarage' || $inventoryTracking == 'periodic')
                     <div class="form-group">
                         <label for="cost">Cost</label>
-                        <input type="number" step="1" class="form-control" id="cost" placeholder="Enter cost"
-                            name="cost" min="1" value="{{ $product->cost ?? 0 }}">
+                        <input type="number" step="1" class="form-control" id="cost"
+                            placeholder="Enter cost" name="cost" min="1" value="{{ $product->cost ?? 0 }}">
                     </div>
                 @endif
 
