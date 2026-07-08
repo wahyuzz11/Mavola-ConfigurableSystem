@@ -3,7 +3,7 @@
 @section('content')
     <div class="page-header mb-4">
         <h3 class="fw-bold mb-3">
-            Purchase Settings
+            Konfigurasi Pembelian
         </h3>
     </div>
 
@@ -23,7 +23,7 @@
         @csrf
 
         <div class="form-group mb-5">
-            <label class="fw-semibold mb-3">Purchase payment Configuration</label>
+            <label class="fw-semibold mb-3">Konfigurasi pembayaran pembelian</label>
             <div class="d-flex flex-wrap gap-3">
                 @foreach ($paymentMethods as $method)
                     <div class="form-check">
@@ -37,21 +37,13 @@
                 @endforeach
             </div>
         </div>
-
-        <div class="form-group mb-5">
-            <label class="fw-semibold mb-3">Shipping method</label>
-            <div class="d-flex flex-wrap gap-3">
-                @foreach ($receivingMethods as $method)
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="receiving_method[]"
-                            id="receiving_method_{{ $method->id }}" value="{{ $method->id }}"
-                            @checked($method->status == 1) @disabled($method->types == 'mandatory')>
-                        <label class="form-check-label" for="receiving_method_{{ $method->id }}">
-                            {{ $method->name }}
-                        </label>
-                    </div>
-                @endforeach
-            </div>
+        
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="purchase_shipping_expense" name="purchase_shipping_expense" value="1"
+                @checked($activePurchaseShippingConfig->status == 1)>
+            <label class="form-check-label" for="purchase_shipping_expense">
+                Aktifkan ongkir untuk pembelian
+            </label>
         </div>
 
         <button type="submit" class="btn btn-primary mt-4">Save Configuration</button>
@@ -84,16 +76,16 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Confirm Configuration Changes</h5>
+                    <h5 class="modal-title">Konfirmasi Perubahan konfigurasi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to update these payment and shipping configurations?</p>
-                    <p class="text-muted">This change will affect all future purchases.</p>
+                    <p>Apakah anda yakin menyimpan konfigurasi ini</p>
+                    <p class="text-muted">Ini akan berefek samping ke transaksi pembelian seterusnya</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="confirmConfigSubmit">Confirm Changes</button>
+                    <button type="button" class="btn btn-primary" id="confirmConfigSubmit">Konfirmasi</button>
                 </div>
             </div>
         </div>

@@ -15,10 +15,9 @@ class ProductController extends Controller
     {
         $configController = new ConfigurationController();
         $cogsMethod = $configController->GetOneConfigMethod("cogs_method");
-        $inventoryTracking = $configController->GetOneConfigMethod("inventory_tracking_method");
         $categories = Category::all();
         $products = Product::all();
-        return view('products.index', compact('products', 'cogsMethod', 'categories', 'inventoryTracking'));
+        return view('products.index', compact('products', 'cogsMethod', 'categories'));
     }
 
 
@@ -27,9 +26,8 @@ class ProductController extends Controller
         $categories = Category::all();
         $configController = new ConfigurationController();
         $cogsMethod = $configController->GetOneConfigMethod("cogs_method");
-        $inventoryTracking = $configController->GetOneConfigMethod("inventory_tracking_method");
         $expiredDateSetting = $configController->getOneConfigMethod("expired_date_settings");
-        return view('products.addProduct', compact('categories', 'cogsMethod', 'inventoryTracking', 'expiredDateSetting'));
+        return view('products.addProduct', compact('categories', 'cogsMethod', 'expiredDateSetting'));
     }
 
     /**
@@ -40,18 +38,13 @@ class ProductController extends Controller
         try {
 
             $configController = new ConfigurationController();
-            // $cogsMethod = $configController->GetOneConfigMethod("cogs_method");
-            // $expiredActive = $configController->GetOneConfigMethod("expiredActive");
             $newProduct = new Product();
             $newProduct->product_name = $request->get("name");
             $newProduct->description = $request->get("description");
             $newProduct->minimum_total_stock = $request->get("minimum_total_stock");
-            $newProduct->total_stock = $request->get("total_stock");
+            $newProduct->total_stock = 0;
             $newProduct->unit_name = $request->get("unit_name");
 
-            if ($request->has("cost")) {
-                $newProduct->cost = $request->get("cost");
-            }
 
             if ($request->has(["expired_active_setting", "expired_date_setting"])) {
                 $newProduct->expired_date_active = $request->get("expired_active_setting");
@@ -87,9 +80,8 @@ class ProductController extends Controller
         $categories = Category::all();
         $configController = new ConfigurationController();
         $cogsMethod = $configController->GetOneConfigMethod("cogs_method");
-        $inventoryTracking = $configController->GetOneConfigMethod("inventory_tracking_method");
         $expiredDateSetting = $configController->getOneConfigMethod("expired_date_settings");
-        return view('products.edit', compact('product', 'categories', 'cogsMethod', 'inventoryTracking','expiredDateSetting'));
+        return view('products.edit', compact('product', 'categories', 'cogsMethod', 'expiredDateSetting'));
     }
 
     public function edit(Product $product) {}
@@ -111,21 +103,6 @@ class ProductController extends Controller
             $updatedProduct->minimum_total_stock = $request->minimum_total_stock;
             $updatedProduct->unit_name = $request->unit_name;
             $updatedProduct->price = $request->price;
-
-            // Get configuration
-            // $configController = new ConfigurationController();
-            // $cogsMethod = $configController->GetOneConfigMethod("cogs_method");
-            // $inventoryTracking = $configController->GetOneConfigMethod("inventory_tracking_method");
-
-            // Update stock only if periodic inventory tracking
-            // if ($inventoryTracking == 'periodic') {
-            //     $updatedProduct->total_stock = $request->total_stock;
-            // }
-
-            // // Update cost if needed
-            // if ($cogsMethod == 'standard' || $inventoryTracking == 'periodic') {
-            //     $updatedProduct->cost = $request->cost;
-            // }
 
             if ($request->has('cost')) {
                 $updatedProduct->cost = $request->get('cost');
@@ -156,5 +133,20 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to update product: ' . $e->getMessage());
         }
+    }
+
+    public function destroy(Product $product)
+    {
+        // Cek apakah masih ada batch yang belum kosong (empty_status == 1)
+        $hasActiveBatch = $product->productBatchs()
+            ->where('empty_status', 1)
+            ->exists();
+
+        if ($hasActiveBatch) {
+            return redirect()->back()->with('error', 'Produk "' . $product->product_name . '" tidak dapat dihapus karena masih terdapat batch yang belum kosong.');
+        }
+
+        $product->delete();
+        return back()->with('success', 'Produk berhasil dihapus.');
     }
 }

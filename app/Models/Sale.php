@@ -17,9 +17,10 @@ class Sale extends Model
         'total_price',
         'sale_date',
         'delivery_method',
-        'payment_methods',
+        'payment_method',
         'status',
         'global_discount',
+        'total_discount',
         'shipped_date',
         'discount_cashback',
         'recipient_name',
@@ -30,7 +31,6 @@ class Sale extends Model
         'created_at',
         'updated_at',
         'deleted_at',
-        'cogs_method',
     ];
 
     public function saleDetails(): HasMany

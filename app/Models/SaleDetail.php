@@ -15,13 +15,13 @@ class SaleDetail extends Model
         'subtotal',
         'quantity',
         'discount_value',
-        'recalculate_date',
         'sales_id',
         'products_id',
         'created_at',
         'updated_at',
         'deleted_at',
         'cogs_sale',
+        'price',
     ];
 
     public function sale(): BelongsTo

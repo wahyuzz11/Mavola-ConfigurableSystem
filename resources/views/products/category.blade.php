@@ -3,11 +3,11 @@
 @section('content')
     <div class="page-header">
         <h3 class="fw-bold mb-3">
-            Product Category
+            Kategori Produk
         </h3>
 
         <div class="ms-md-auto py-2 py-md-0">
-            <button type="button" class="btn btn-primary btn-round" data-bs-toggle="modal" data-bs-target="#addModal">Add Category</button>
+            <button type="button" class="btn btn-primary btn-round" data-bs-toggle="modal" data-bs-target="#addModal">Tambah Kategori</button>
         </div>
     </div>
 
@@ -20,7 +20,7 @@
                         ID
                     </th>
                     <th>
-                        Category name
+                        Nama Kategori
                     </th>
                 </tr>
             </thead>
@@ -53,7 +53,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addModalLabel">Add Category</h5>
+                    <h5 class="modal-title" id="addModalLabel">Tambah Kategori</h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
 

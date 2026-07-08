@@ -68,6 +68,8 @@ class ConfigurationController extends Controller
 
     public function getSalesConfiguration() {}
 
+
+
     public function getInventoryConfiguration()
     {
 
@@ -100,56 +102,19 @@ class ConfigurationController extends Controller
 
         try {
 
-            // query data lengkap konfigurasi yang dipilih
-            $newInventoryMethod = SubConfiguration::findOrFail($request->input('inventory_method'));
+            SubConfiguration::where('code', 'EXP-01')
+                ->update(['status' => $request->has('expired_status') ? 1 : 0]);
 
-            // If switching to periodic
-            if (strtolower($newInventoryMethod->code) === 'INV-T-02') {
-                $activeBatch = ProductBatch::where('stock', '>', 0)
-                    ->where('empty_status', 0)
-                    ->exists();
+            // Update COGS activation
 
-                if ($activeBatch) {
-                    throw new \Exception("Cannot switch to periodic while active product batches exist.");
-                }
+            // $enableCogs = $request->has('enable_cogs') ? 1 : 0;
 
-                // Recalculate periodic stock
-                $this->recalculatePeriodicStock();
-
-                //Disable COGS config in configurationn table
-                Configuration::where('code', 'COGS')->update(['status' => 0]);
-                // Disable all COGS related configurations
-                SubConfiguration::whereHas('configuration', function ($query) {
-                    $query->where('name', 'cogs_method');
-                })->update(['status' => 0]);
-            }
-
-            // Update inventory method
-            // reset semua status konfigurasi ke 0
             SubConfiguration::whereHas('configuration', function ($query) {
-                $query->where('name', 'inventory_tracking_method');
-            })->update(['status' => 0]);
+                $query->where('name', 'cogs_method');
+            })->update(['status' => 0]); // First disable all
 
-            SubConfiguration::where('id', $request->input('inventory_method'))
+            SubConfiguration::where('id', $request->input('cogs_method'))
                 ->update(['status' => 1]);
-
-            // Update COGS method only if enabled and inventory method is perpetual
-            if ($newInventoryMethod->code == 'INV-T-01') {
-                // Update expired status
-                SubConfiguration::where('code', 'EXP-01')
-                    ->update(['status' => $request->has('expired_status') ? 1 : 0]);
-
-                // Update COGS activation
-
-                // $enableCogs = $request->has('enable_cogs') ? 1 : 0;
-
-                SubConfiguration::whereHas('configuration', function ($query) {
-                    $query->where('name', 'cogs_method');
-                })->update(['status' => 0]); // First disable all
-
-                SubConfiguration::where('id', $request->input('cogs_method'))
-                    ->update(['status' => 1]);
-            }
 
             DB::commit();
             return redirect()->back()->with('success', 'Configuration updated successfully!');
@@ -174,7 +139,9 @@ class ConfigurationController extends Controller
             })
             ->get();
 
-        return view('settings.purchase', compact('paymentMethods', 'receivingMethods'));
+        $activePurchaseShippingConfig = Subconfiguration::where('code', 'SHP-P-01')->first();
+
+        return view('settings.purchase', compact('paymentMethods', 'receivingMethods', 'activePurchaseShippingConfig'));
     }
 
     public function updatePurchaseConfiguration(Request $request)
@@ -184,10 +151,13 @@ class ConfigurationController extends Controller
 
             // Update metode pembayaran (konfigurasi purchase_payment)
             $purchasePaymentConfig = Configuration::where('name', 'purchase_payment')->first();
-            $receivingConfig =  Configuration::where('name', 'receiving_purchase_method')->first();
+ 
             // Ambil semua sub-konfigurasi pembayaran
             $paymentMethods = SubConfiguration::where('configurations_id',   $purchasePaymentConfig->id)->get();
-            $receivingMethods = SubConfiguration::where('configurations_id', $receivingConfig->id)->get();
+
+
+            SubConfiguration::where('code', 'SHP-P-01')
+                ->update(['status' => $request->has('purchase_shipping_expense') ? 1 : 0]);
 
             // Update status metode pembayaran
             foreach ($paymentMethods as $method) {
@@ -203,21 +173,7 @@ class ConfigurationController extends Controller
 
                 $method->update(['status' => $status]);
             }
-
-            // Update status metode penerimaan barang
-            foreach ($receivingMethods as $method) {
-                $status = 0;
-                // Metode wajib selalu diaktifkan
-                if ($method->types == 'mandatory') {
-                    $status = 1;
-                }
-                // Untuk non-wajib, cek apakah ada di request
-                elseif (in_array($method->id, $request->input('receiving_method', []))) {
-                    $status = 1;
-                }
-
-                $method->update(['status' => $status]);
-            }
+            
 
             DB::commit();
 
@@ -237,11 +193,7 @@ class ConfigurationController extends Controller
             })
             ->get();
 
-        $shippingMethods = SubConfiguration::with('configuration')
-            ->whereHas('configuration', function ($query) {
-                $query->where('name', 'shipping_sale_method');
-            })
-            ->get();
+        $activeSaleShippingConfig = Subconfiguration::where('code', 'SHP-S-01')->first();
 
         $discountStatus = configuration::where('name', 'sale_discount')->first();
         $discStatus = $discountStatus ? $discountStatus->status : 0;
@@ -252,7 +204,7 @@ class ConfigurationController extends Controller
             ->get();
 
 
-        return view('settings.sale', compact('paymentMethods', 'discStatus', 'discountMethods', 'shippingMethods'));
+        return view('settings.sale', compact('paymentMethods', 'discStatus', 'discountMethods', 'activeSaleShippingConfig'));
     }
 
     public function updateSaleConfiguration(Request $request)
@@ -269,59 +221,26 @@ class ConfigurationController extends Controller
                 $method->update(['status' => $status]);
             }
 
-            // Update shipping methods
-            $shippingConfig = Configuration::where('name', 'shipping_sale_method')->first();
-            $shippingMethods = SubConfiguration::where('configurations_id', $shippingConfig->id)->get();
-
-            foreach ($shippingMethods as $method) {
-                $status = ($method->types == 'mandatory' || in_array($method->id, $request->input('shipping_method', []))) ? 1 : 0;
-                $method->update(['status' => $status]);
-            }
+            SubConfiguration::where('code', 'SHP-S-01')
+                ->update(['status' => $request->has('sale_shipping_expense') ? 1 : 0]);
 
             // Update discount configuration
             $saleDiscountConfig = Configuration::where('name', 'sale_discount')->first();
             $discountStatus = $request->has('discount_status') ? 1 : 0;
             $saleDiscountConfig->update(['status' => $discountStatus]);
 
-            // Process discount methods with mutual exclusivity validation
+            // Process discount methods (single selection via radio button)
             $discountMethods = SubConfiguration::where('configurations_id', $saleDiscountConfig->id)->get();
-            $discountValues = $request->input('discount_value', []);
-            $selectedDiscountMethods = $request->input('discount_method', []);
 
-            // Check for mutual exclusivity between global and product-specific discounts
-            $globalDiscountMethod = $discountMethods->where('code', 'DISC-02')->first();
-            $productDiscountMethod = $discountMethods->where('code', 'DISC-01')->first();
-
-            $globalSelected = $globalDiscountMethod && in_array($globalDiscountMethod->id, $selectedDiscountMethods);
-            $productSelected = $productDiscountMethod && in_array($productDiscountMethod->id, $selectedDiscountMethods);
-
-            // If both are selected, prioritize the last one in the array (or implement your own logic)
-            if ($globalSelected && $productSelected) {
-                // Find which one comes last in the selected array
-                $globalIndex = array_search($globalDiscountMethod->id, $selectedDiscountMethods);
-                $productIndex = array_search($productDiscountMethod->id, $selectedDiscountMethods);
-
-                if ($globalIndex > $productIndex) {
-                    // Global discount was selected last, remove product discount
-                    $selectedDiscountMethods = array_diff($selectedDiscountMethods, [$productDiscountMethod->id]);
-                } else {
-                    // Product discount was selected last, remove global discount
-                    $selectedDiscountMethods = array_diff($selectedDiscountMethods, [$globalDiscountMethod->id]);
-                }
-            }
+            // discount_method dikirim dari radio button (single value), bukan array.
+            $selectedDiscountMethods = $request->filled('discount_method')
+                ? [(int) $request->input('discount_method')]
+                : [];
 
             foreach ($discountMethods as $method) {
-                $updateData = [
+                $method->update([
                     'status' => $discountStatus && in_array($method->id, $selectedDiscountMethods) ? 1 : 0,
-                    'value' => 0 // Default value
-                ];
-
-                // Only update value if method is active
-                if ($updateData['status'] && isset($discountValues[$method->id])) {
-                    $updateData['value'] = (int)$discountValues[$method->id]; // Direct integer conversion
-                }
-
-                $method->update($updateData);
+                ]);
             }
 
             DB::commit();
@@ -334,7 +253,7 @@ class ConfigurationController extends Controller
 
 
     // berfungsi untuk mengambil subconfig yang aktif
-    public function getOneConfigMethod($name)
+    public static function getOneConfigMethod($name)
     {
         try {
             $configMethod = DB::table('sub_configurations as sc')
@@ -351,9 +270,6 @@ class ConfigurationController extends Controller
     }
 
 
- 
-
-
 
 
     public function checkBatchStatus()
@@ -365,68 +281,5 @@ class ConfigurationController extends Controller
         return response()->json([
             'hasActiveBatch' => $hasActiveBatch
         ]);
-    }
-
-
-    public function recalculatePeriodicStock()
-    {
-        try {
-            $products = Product::all();
-            $processedProducts = 0;
-            $updatedProducts = [];
-
-            foreach ($products as $product) {
-                $initialStock = $product->total_stock;
-
-                $purchasedQty = PurchaseDetail::where('products_id', $product->id)
-                    ->whereNull('recalculate_date')
-                    ->sum('quantity');
-
-                $soldQty = SaleDetail::where('products_id', $product->id)
-                    ->whereNull('recalculate_date')
-                    ->sum('quantity');
-
-                $adjustedStock = $product->total_stock + $purchasedQty - $soldQty;
-
-                // Only update if there's a change
-                if ($adjustedStock != $initialStock) {
-                    $product->update([
-                        'total_stock' => $adjustedStock
-                    ]);
-
-                    $updatedProducts[] = [
-                        'name' => $product->product_name,
-                        'old_stock' => $initialStock,
-                        'new_stock' => $adjustedStock,
-                        'difference' => $adjustedStock - $initialStock
-                    ];
-                }
-
-                // Update semua detail sebagai sudah direkalkulasi
-                PurchaseDetail::where('products_id', $product->id)
-                    ->whereNull('recalculate_date')
-                    ->update(['recalculate_date' => Carbon::now()]);
-
-                SaleDetail::where('products_id', $product->id)
-                    ->whereNull('recalculate_date')
-                    ->update(['recalculate_date' => Carbon::now()]);
-
-                $processedProducts++;
-            }
-
-            // Return success response
-            return [
-                'success' => true,
-                'message' => "Stock recalculation completed successfully! {$processedProducts} products processed, " . count($updatedProducts) . " products updated.",
-                'processed_products' => $processedProducts,
-                'updated_products' => count($updatedProducts),
-                'details' => $updatedProducts
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'message' => 'Error during stock recalculation: ' . $e->getMessage()
-            ];
-        }
     }
 }

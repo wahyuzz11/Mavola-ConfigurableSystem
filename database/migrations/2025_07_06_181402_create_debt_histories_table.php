@@ -17,6 +17,7 @@ return new class extends Migration
             $table->dateTime('bill_date');
             $table->dateTime('due_date');
             $table->enum('status', ['pending', 'paid', 'late']);
+            $table->enum('status',['Tunai','Transfer']);
             $table->foreignId('supplier_id')->constrained('suppliers');
             $table->foreignId('purchases_id')->constrained('purchases');
             $table->timestamps();

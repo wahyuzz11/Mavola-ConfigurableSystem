@@ -3,11 +3,11 @@
 @section('content')
     <div class="page-header">
         <h3 class="fw-bold mb-3">
-            Suppliers
+            Pemasok
         </h3>
 
         <div class="ms-md-auto py-2 py-md-0">
-            <button type="button" class="btn btn-primary btn-round" data-bs-toggle="modal" data-bs-target="#addModal">Suppliers</button>
+            <button type="button" class="btn btn-primary btn-round" data-bs-toggle="modal" data-bs-target="#addModal">Pemasok</button>
         </div>
     </div>
 
@@ -17,16 +17,16 @@
             <thead>
                 <tr role="row">
                     <th>
-                        Company name
+                        Nama Usaha
                     </th>
                     <th>
-                        phone number
+                        Nomor HP
                     </th>
                     <th>
-                        owner name
+                        Nama Pemilik
                     </th>
                     <th>
-                        address
+                        Alamat
                     </th>
                 </tr>
             </thead>
@@ -71,7 +71,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addModalLabel">Add Suppliers</h5>
+                    <h5 class="modal-title" id="addModalLabel">Tambah Pemasok</h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
 

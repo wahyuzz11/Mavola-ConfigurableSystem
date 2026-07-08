@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\DebtHistory;
 use App\Models\Supplier;
 use App\Models\Purchase;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\DB;
 
 
@@ -41,26 +42,6 @@ class DebtHistoryController extends Controller
         $suppliers = Supplier::all();
         $purchases = Purchase::all();
         return view('debt_histories.create', compact('suppliers', 'purchases'));
-    }
-
-    /**
-     * Store a newly created debt history in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'debt_nominal' => 'required|numeric',
-            'bill_date' => 'required|date',
-            'due_date' => 'required|date|after:bill_date',
-            'status' => 'required|in:pending,paid,late',
-            'supplier_id' => 'required|exists:suppliers,id',
-            'purchases_id' => 'required|exists:purchases,id'
-        ]);
-
-        DebtHistory::create($validated);
-
-        return redirect()->route('debt-histories.index')
-            ->with('success', 'Debt history created successfully.');
     }
 
     /**
@@ -121,34 +102,63 @@ class DebtHistoryController extends Controller
             ->with('success', 'Debt history deleted successfully.');
     }
 
-    public function markAsPaid(DebtHistory $debt)
+    public function markAsPaid(DebtHistory $debt, Request $request)
     {
-        DB::beginTransaction();
-
         try {
+            $validated = $request->validate([
+                'paymentMethod' => 'required|string',
+            ]);
+
             $status = now()->gt($debt->due_date) ? 'late' : 'paid';
 
+            DB::beginTransaction();
+
             $debt->update([
-                'status' => $status,
-                'updated_at' => now()
+                'status'         => $status,
+                'payment_method' => $validated['paymentMethod'],
+                'updated_at'     => now(),
             ]);
+
+            
+            // $debt->payment_method = $validated['paymentMethod'];
+            $debt->save();
+
+            $newJournal = JournalEntryController::storeJournalDebt($debt);
+            $account    = JournalEntryController::checkDebtAccount($debt);
+
+            foreach ($account as $acc) {
+                JournalEntryController::storeJournalEntry(
+                    $acc['code'],
+                    $acc['position'],
+                    $debt->debt_nominal,
+                    $newJournal->id
+                );
+            }
 
             DB::commit();
 
-            $message = $status == 'paid'
+            $message = $status === 'paid'
                 ? 'Debt marked as paid successfully'
                 : 'Debt marked as late (payment after due date)';
 
-            return back()->with('success', $message);
+            return response()->json([
+                'success'  => true,
+                'message'  => $message,
+                'redirect' => route('debts.index'),
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to update debt status: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update debt status: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
     public function checkPendingDebts()
     {
-        $hasPendingDebts = DebtHistory::whereIn('status', ['pending', 'late'])->exists();
+        $hasPendingDebts = DebtHistory::whereIn('status', ['pending'])->exists();
 
         return response()->json([
             'has_pending_debts' => $hasPendingDebts

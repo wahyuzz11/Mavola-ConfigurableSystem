@@ -25,7 +25,6 @@ class Product extends Model
         'categories_id',
         'starting_stock_periodic',
         'periodic_start_date',
-        // Note: 'id', 'created_at', 'updated_at', and 'deleted_at' are typically not fillable
     ];
 
     public function category(): BelongsTo

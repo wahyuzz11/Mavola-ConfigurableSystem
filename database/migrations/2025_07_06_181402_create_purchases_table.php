@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('invoice_number', 45);
             $table->double('total_price');
             $table->dateTime('purchase_date');
-            $table->enum('status', ['In delivery', 'completed']);
+            $table->enum('status', ['In delivery', 'completed']); //cek ulang
             $table->enum('receive_method', ['RE-01', 'RE-02']);
             $table->enum('payment_method', ['P-PAY-01', 'P-PAY-02', 'P-PAY-03']);
             $table->double('delivery_cost')->nullable();

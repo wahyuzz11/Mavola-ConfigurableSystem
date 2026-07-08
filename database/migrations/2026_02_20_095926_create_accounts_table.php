@@ -11,19 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 45);
             $table->timestamps();
-            $table->softDeletes();
+            $table->string('name');
+            $table->enum('account_type',['Asset','Liability','Equity','Revenue','Expense']);
+            $table->tinyInteger('is_active');
+        
         });
     }
 
     /**
-     * Reverse the migrations
+     * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('accounts');
     }
 };

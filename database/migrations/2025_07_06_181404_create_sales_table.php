@@ -18,11 +18,13 @@ return new class extends Migration
             $table->dateTime('sale_date');
             $table->enum('delivery_method', ['DEL-01', 'DEL-02']);
             $table->enum('payment_methods', ['S-PAY-01', 'S-PAY-02', 'S-PAY-03']);
-            $table->enum('status', ['In delivery', 'completed']);
+            $table->enum('status', ['In delivery', 'completed']); //cek ulang
             $table->double('global_discount')->nullable();
+            $table->double('total_discount')->nullable();
+            $table->double('discount_cashback')->nullable();
             $table->timestamp('shipped_date')->nullable();
             $table->double('discount_cashback')->nullable();
-            $table->string('recipient_name', 45)->nullable();
+            $table->string('recipient_name', 45)->nullable(); 
             $table->longText('customer_address')->nullable();
             $table->integer('delivery_cost')->nullable();
             $table->foreignId('users_id')->constrained('users');

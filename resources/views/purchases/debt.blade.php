@@ -3,30 +3,30 @@
 @section('content')
     <div class="page-header">
         <h3 class="fw-bold mb-3">
-            Debt Histories
+            Riwayat Utang
         </h3>
         <div class="d-flex">
-            <span class="badge bg-warning me-2">Pending: {{ $pendingCount }}</span>
-            <span class="badge bg-success me-2">Paid: {{ $paidCount }}</span>
-            <span class="badge bg-danger">Late: {{ $lateCount }}</span>
+            <span class="badge bg-warning me-2">Belum Lunas: {{ $pendingCount }}</span>
+            <span class="badge bg-success me-2">Lunas: {{ $paidCount }}</span>
+            <span class="badge bg-danger">Terlambat: {{ $lateCount }}</span>
         </div>
     </div>
 
     <!-- Pending Debts Card -->
     <div class="card mb-4">
         <div class="card-header bg-warning">
-            <h5>Pending Debts</h5>
+            <h5>Utang Belum Lunas</h5>
         </div>
         <div class="card-body">
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Supplier</th>
-                        <th>Bill Date</th>
-                        <th>Due Date</th>
-                        <th>Amount</th>
-                        <th>Purchase Ref</th>
-                        <th>Actions</th>
+                        <th>Tanggal Tagihan</th>
+                        <th>Tanggal Jatuh Tempo</th>
+                        <th>Jumlah</th>
+                        <th>Ref. Pembelian</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,21 +38,21 @@
                                 {{ \Carbon\Carbon::parse($debt->due_date)->format('d M Y') }}
                             </td>
                             <td>Rp {{ number_format($debt->debt_nominal, 0, ',', '.') }}</td>
-                            <td>{{ $debt->purchase->invoice_number ?? 'N/A' }}</td>
+                            <td>{{ $debt->purchase->invoice_number ?? 'Tidak ada' }}</td>
                             <td>
-                                <a href="{{ route('debts.show', $debt->id) }}" class="btn btn-info btn-sm">View</a>
-                                @if ($debt->status == 'pending')
+                                <a href="{{ route('debts.show', $debt->id) }}" class="btn btn-info btn-sm">Lihat</a>
+                                {{-- @if ($debt->status == 'pending')
                                     <form action="{{ route('debts.mark-paid', $debt->id) }}" method="POST"
                                         style="display:inline;">
                                         @csrf
-                                        <button type="submit" class="btn btn-success btn-sm">Mark Paid</button>
+                                        <button type="submit" class="btn btn-success btn-sm">Tandai Lunas</button>
                                     </form>
-                                @endif
+                                @endif --}}
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">No pending debts found</td>
+                            <td colspan="6" class="text-center">Tidak ada utang yang belum lunas</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -64,18 +64,18 @@
     <!-- Paid Debts Card -->
     <div class="card mb-4">
         <div class="card-header bg-success text-white">
-            <h5>Paid Debts</h5>
+            <h5>Utang Lunas</h5>
         </div>
         <div class="card-body">
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Supplier</th>
-                        <th>Bill Date</th>
-                        <th>Paid Date</th>
-                        <th>Amount</th>
-                        <th>Purchase Ref</th>
-                        <th>Actions</th>
+                        <th>Tanggal Tagihan</th>
+                        <th>Tanggal Dibayar</th>
+                        <th>Jumlah</th>
+                        <th>Ref. Pembelian</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -85,14 +85,14 @@
                             <td>{{ \Carbon\Carbon::parse($debt->bill_date)->format('d M Y') }}</td>
                             <td>{{ \Carbon\Carbon::parse($debt->updated_at)->format('d M Y') }}</td>
                             <td>Rp {{ number_format($debt->debt_nominal, 0, ',', '.') }}</td>
-                            <td>{{ $debt->purchase->invoice_number ?? 'N/A' }}</td>
+                            <td>{{ $debt->purchase->invoice_number ?? 'Tidak ada' }}</td>
                             <td>
-                                <a href="{{ route('debts.show', $debt->id) }}" class="btn btn-info btn-sm">View</a>
+                                <a href="{{ route('debts.show', $debt->id) }}" class="btn btn-info btn-sm">Lihat</a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">No paid debts found</td>
+                            <td colspan="6" class="text-center">Tidak ada utang yang sudah lunas</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -104,19 +104,19 @@
     <!-- Late Debts Card -->
     <div class="card">
         <div class="card-header bg-danger text-white">
-            <h5>Late Debts</h5>
+            <h5>Utang Terlambat</h5>
         </div>
         <div class="card-body">
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Supplier</th>
-                        <th>Bill Date</th>
-                        <th>Due Date</th>
-                        <th>Days Late</th>
-                        <th>Amount</th>
-                        <th>Purchase Ref</th>
-                        <th>Actions</th>
+                        <th>Tanggal Tagihan</th>
+                        <th>Tanggal Jatuh Tempo</th>
+                        <th>Hari Keterlambatan</th>
+                        <th>Jumlah</th>
+                        <th>Ref. Pembelian</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -128,21 +128,21 @@
                             <td>{{ $debt->supplier->company_name }}</td>
                             <td>{{ \Carbon\Carbon::parse($debt->bill_date)->format('d M Y') }}</td>
                             <td class="text-danger">{{ \Carbon\Carbon::parse($debt->due_date)->format('d M Y') }}</td>
-                            <td>{{ $daysLate }} days</td>
+                            <td>{{ $daysLate }} hari</td>
                             <td>Rp {{ number_format($debt->debt_nominal, 0, ',', '.') }}</td>
-                            <td>{{ $debt->purchase->invoice_number ?? 'N/A' }}</td>
+                            <td>{{ $debt->purchase->invoice_number ?? 'Tidak ada' }}</td>
                             <td>
-                                <a href="{{ route('debts.show', $debt->id) }}" class="btn btn-info btn-sm">View</a>
-                                <form action="{{ route('debts.mark-paid', $debt->id) }}" method="POST"
+                                <a href="{{ route('debts.show', $debt->id) }}" class="btn btn-info btn-sm">Lihat</a>
+                                {{-- <form action="{{ route('debts.mark-paid', $debt->id) }}" method="POST"
                                     style="display:inline;">
                                     @csrf
-                                    <button type="submit" class="btn btn-success btn-sm">Mark Paid</button>
-                                </form>
+                                    <button type="submit" class="btn btn-success btn-sm">Tandai Lunas</button>
+                                </form> --}}
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center">No late debts found</td>
+                            <td colspan="7" class="text-center">Tidak ada utang yang terlambat</td>
                         </tr>
                     @endforelse
                 </tbody>
