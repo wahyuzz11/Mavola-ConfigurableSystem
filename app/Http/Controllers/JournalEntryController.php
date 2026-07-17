@@ -174,9 +174,10 @@ class JournalEntryController extends Controller
         try {
             $newJournal = new JournalEntry();
             $deliveryCost = $purchase->delivery_cost
-                ? "dan biaya pengiriman sebesar " . $purchase->delivery_cost . " "
+                ? "dan biaya pengiriman sebesar Rp" . number_format($purchase->delivery_cost,'0',
+                ',','.') . " "
                 : "";
-            $description = "Melakukan transaksi pembelian persediaan sebesar " . $purchase->total_price .
+            $description = "Melakukan transaksi pembelian persediaan sebesar Rp" . number_format($purchase->total_price,'0',',','.') .
                 " dari supplier " . $deliveryCost . $purchase->supplier->name .
                 " dengan metode pembayaran ";
 
@@ -205,7 +206,7 @@ class JournalEntryController extends Controller
     {
         try {
             $newJournal = new JournalEntry();
-            $description = "Melakukan pembayaran hutang transaksi pembelian kepada " . $debt->supplier->company_name . "sebesar Rp" . $debt->debt_nominal . " 
+            $description = "Melakukan pembayaran hutang transaksi pembelian kepada " . $debt->supplier->company_name . "sebesar Rp" . number_format($debt->debt_nominal,0,',','.') . " 
             dengan metode pembayaran " . $debt->payment_method;
             $newJournal->ref_code = $debt->purchase->invoice_number . "-Debt_Paid";
             $newJournal->description = $description;
@@ -236,7 +237,6 @@ class JournalEntryController extends Controller
                 default => "",
             };
 
-            // Format nominal transaksi ke Rupiah
             $formattedTotal = "Rp" . number_format($sale->total_price, 0, ',', '.');
 
             // Kumpulkan info diskon yang benar-benar dipakai (nilai > 0 saja)
