@@ -54,17 +54,17 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-warning">
-                    <h5 class="modal-title">Pending Debts Found</h5>
+                    <h5 class="modal-title">Hutang belum terbayar ditemukan!</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>You cannot deactivate P-PAY-03 payment method while there are pending or late debts.</p>
-                    <p>Please settle all debts first before changing this configuration.</p>
+                    <p>Anda tidak bisa mematikan metode pembyaran hutang karena masih ada hutang yang belum terbayar</p>
+                    <p>Tolong selesaikan semua hutang yang ada terlebih dahulu</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <a href="{{ route('debts.index') }}" class="btn btn-primary">
-                        Go to Debt Management
+                        Ke halaman riwayat hutang
                     </a>
                 </div>
             </div>

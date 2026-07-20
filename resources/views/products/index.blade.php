@@ -55,7 +55,7 @@
                             <li class="mb-1">
                                 <strong>Total Stok:</strong>
                                 @php $stock = $product->total_stock ?? 0; @endphp
-                                <span class="badge {{ $stock > 0 ? 'bg-success' : 'bg-danger' }}">
+                                <span class="badge {{ $stock > $product->minimum_total_stock ? 'bg-success' : 'bg-danger' }}">
                                     {{ $stock }} {{ $product->unit_name }}
                                 </span>
                             </li>

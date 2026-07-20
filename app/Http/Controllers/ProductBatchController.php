@@ -33,9 +33,9 @@ class ProductBatchController extends Controller
         $cogsSettings = ConfigurationController::getOneConfigMethod('cogs_method');
         $product = Product::find($productId);
         if ($expirySettings == "tanggal kadaluarsa" && $cogsSettings == 'average') {
-            $batches = ProductBatch::where('products_id', $productId)->orderBy('expired_date', 'ASC')->get();
+            $batches = ProductBatch::where('products_id', $productId)->orderByRaw('expired_date IS NULL,expired_date ASC,purchase_date ASC')->get();
         } else {
-            $batches = ProductBatch::where('products_id', $productId)->orderBy('purchase_date', 'ASC')->get();
+            $batches = ProductBatch::where('products_id', $productId)->orderBy('purchase_date', 'ASC')->get();  
         }
 
 

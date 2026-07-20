@@ -37,9 +37,6 @@ class CustomerController extends Controller
         $newCustomer->contact2 = $request->get("contact2") ?? null;
         $newCustomer->email = $request->get("email") ?? null;
         $newCustomer->address = $request->get("address");
-        $newCustomer->status_active = 1;
-        $newCustomer->blacklist_status = 0;
-        $newCustomer->late_payment = 0;
         $newCustomer->save();
 
         return redirect(url()->previous())->with('status', 'Customer Data has been successfully created!');

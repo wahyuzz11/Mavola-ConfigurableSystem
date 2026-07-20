@@ -58,8 +58,7 @@
             <small class="text-muted d-block mb-3">
                 <strong>FIFO</strong> (First In First Out): Batch pembelian yang paling lama akan digunakan terlebih
                 dahulu.<br>
-                <strong>Average</strong>: Harga pokok dihitung ulang setiap kali berdasarkan rata-rata tertimbang dari
-                pembelian.<br>
+                <strong>Average</strong>: Harga pokok dihitung berdasarkan total semua harga beli barang dibagi total semua stok<br>
             </small>
 
 
@@ -97,19 +96,27 @@
                                     <li>
                                         <strong>Batch produk yang melewati tanggal kadaluarsa akan dianggap otomatis kosong oleh sistem</strong>
                                     </li>
+                                    <li>
+                                        <strong>Apabila pengguna mengaktifkan konfigurasi tanggal kadaluarsa dan tanggal kadaluarsa produk namun
+                                            tidak memasukkan tanggal kadaluarsa ketika transaksi pembelian, maka batch kadaluarsa tersebut akan kosong
+                                            dan sistem akan memprioritaskan batch yang memiliki kadaluarsa terlebih dahulu
+                                        </strong>
+                                    </li>
+                                    <li>
+                                        <strong>
+                                            Jika tanggal kadaluarsa aktif tapi kadaluarsa produk tertentu dimatikan dan tidak ada produk batch yang memiliki tanggal
+                                            kadaluarsa maka sistem akan mengurutkan berdasarkan tanggal pembelian
+                                        </strong>
+                                    </li>
+                                    <li>
+                                        <strong>
+                                            jika pengguna mematikan tanggal kadaluarsa tanpa menghabiskan batch yang memiliki tanggal kadaluarsa, maka pengguna tidak
+                                            dapat melakukan tracking terhadap kadaluarsa produk. Jadi tetap waspada
+                                        </strong>
+                                    </li>
                                 </ul>
                             </li>
                         </ul>
-
-                        <hr class="my-2">
-
-                        <p class="mb-0">
-                            <i class="fa fa-triangle-exclamation text-danger me-1"></i>
-                            <strong>Perhatian:</strong> Pastikan <strong>stok produk dalam kondisi kosong (0)</strong>
-                            sebelum mengaktifkan atau menonaktifkan pengaturan tanggal kadaluarsa. Mengubah pengaturan
-                            ini saat stok masih tersedia dapat menyebabkan <strong>ketidaksesuaian data batch</strong>
-                            pada transaksi berikutnya.
-                        </p>
                     </div>
                 </div>
             </div>
