@@ -24,9 +24,9 @@ class MenuController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
+    /**wly created resource in storage.
      */
+
     public function store(Request $request)
     {
         //
