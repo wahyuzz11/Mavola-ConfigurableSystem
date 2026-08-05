@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -28,36 +29,35 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        try {
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
 
-        // Manually fetch the user by email
-        $user = DB::table('users')
-            ->where('email', $credentials['email'])
-            ->whereNull('deleted_at')
-            ->first();
+            $user = User::where('email', $credentials['email'])
+                ->whereNull('deleted_at')
+                ->first();
 
-        if ($user && hash('sha256', $credentials['password']) === $user->password) {
-            // Log the user in manually using the user's ID
-            Auth::loginUsingId($user->id, $request->remember);
+            if ($user && hash_equals($user->password, hash('sha256', $credentials['password']))) {
+                Auth::login($user, $request->boolean('remember'));
 
-            $request->session()->regenerate();
-            return redirect()->route('home');
+                $request->session()->regenerate();
+
+                return redirect()->route('home');
+            }
+
+            return back()->withErrors([
+                'email' => 'Invalid credentials.',
+            ]);
+        } catch (\Throwable $e) {
+            dd($e);
         }
-
-        return back()->withErrors([
-            'email' => 'Invalid credentials',
-        ])->onlyInput('email');
     }
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        
-    }
+    public function store(Request $request) {}
 
     /**
      * Display the specified resource.
