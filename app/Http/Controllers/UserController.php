@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+Use App\Services\UserService;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -27,33 +26,34 @@ class UserController extends Controller
         //
     }
 
-    public function login(Request $request)
+    
+    public function __construct(Private UserService $userService)
     {
-        try {
-            $credentials = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
-
-            $user = User::where('email', $credentials['email'])
-                ->whereNull('deleted_at')
-                ->first();
-
-            if ($user && hash_equals($user->password, hash('sha256', $credentials['password']))) {
-                Auth::login($user, $request->boolean('remember'));
-
-                $request->session()->regenerate();
-
-                return redirect()->route('home');
-            }
-
-            return back()->withErrors([
-                'email' => 'Invalid credentials.',
-            ]);
-        } catch (\Throwable $e) {
-            dd($e);
-        }
+        $this->userService = $userService;
     }
+
+    public function login(Request $request){
+
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]); 
+
+        $throttleKey = strtolower($credentials['email']).'|'.$request->ip();
+
+        try{
+            $this->userService->login($credentials, $request->boolean('remember'), $throttleKey);
+        } catch(ValidationException $e){
+            return back()->withErrors($e->errors())->onlyInput('email');
+        }
+
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('home'));
+        
+    }
+
+
     /**
      * Store a newly created resource in storage.
      */
@@ -93,11 +93,8 @@ class UserController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+       $this->userService->logout($request);
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('login')->with('message', 'Successfully logged out');
+       return redirect()->route('login')->with('pesan',"Logout berhasil");
     }
 }

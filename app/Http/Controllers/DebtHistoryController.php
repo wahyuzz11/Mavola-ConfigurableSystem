@@ -47,7 +47,7 @@ class DebtHistoryController extends Controller
     /**
      * Display the specified debt history.
      */
-    public function show(string $id)
+    public function show(string $id)    
     {
         $debtHistory = DebtHistory::with([
             'purchase',
