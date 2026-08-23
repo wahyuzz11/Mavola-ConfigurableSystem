@@ -11,7 +11,7 @@ use App\Models\DebtHistory;
 use App\Models\Account;
 use Carbon\Carbon;
 use Carbon\Exceptions\Exception;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request;/*  */
 use Illuminate\Support\Facades\DB;
 
 class PurchaseController extends Controller
