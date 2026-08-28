@@ -13,15 +13,13 @@ return new class extends Migration
     {
         Schema::create('sale_details', function (Blueprint $table) {
             $table->id();
-            $table->double('subtotal');
-            $table->float('quantity');
-            $table->double('discount_value')->nullable();
-            $table->date('recalculate_date')->nullable();
+            $table->decimal('subtotal', 15, 2);
+            $table->decimal('quantity', 10, 2);
+            $table->decimal('cogs_sale',15,2);
             $table->foreignId('sales_id')->constrained('sales');
             $table->foreignId('products_id')->constrained('products');
             $table->timestamps();
             $table->softDeletes();
-            $table->double('cogs_sale')->nullable();
         });
     }
 

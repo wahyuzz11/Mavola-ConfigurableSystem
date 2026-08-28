@@ -14,24 +14,20 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->string('invoice_number', 45);
-            $table->double('total_price');
+            $table->decimal('total_sales', 15, 2);
             $table->dateTime('sale_date');
             $table->enum('delivery_method', ['DEL-01', 'DEL-02']);
             $table->enum('payment_methods', ['S-PAY-01', 'S-PAY-02', 'S-PAY-03']);
-            $table->enum('status', ['In delivery', 'completed']); //cek ulang
-            $table->double('global_discount')->nullable();
-            $table->double('total_discount')->nullable();
+            $table->string('cogs_method', 45)->nullable();
+            $table->decimal('global_discount')->nullable();
+            $table->decimal('total_discount')->nullable();
+            $table->decimal('discount_cashback')->nullable();
             $table->double('discount_cashback')->nullable();
-            $table->timestamp('shipped_date')->nullable();
-            $table->double('discount_cashback')->nullable();
-            $table->string('recipient_name', 45)->nullable(); 
-            $table->longText('customer_address')->nullable();
-            $table->integer('delivery_cost')->nullable();
+            $table->decimal('delivery_cost',15,2)->nullable();
             $table->foreignId('users_id')->constrained('users');
             $table->foreignId('customers_id')->constrained('customers');
             $table->timestamps();
             $table->softDeletes();
-            $table->string('cogs_method', 45)->nullable();
         });
     }
 

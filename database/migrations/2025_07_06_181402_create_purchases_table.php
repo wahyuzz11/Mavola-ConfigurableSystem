@@ -14,15 +14,12 @@ return new class extends Migration
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
             $table->string('invoice_number', 45);
-            $table->double('total_price');
+            $table->decimal('total_price',15,2);
             $table->dateTime('purchase_date');
-            $table->enum('status', ['In delivery', 'completed']); //cek ulang
-            $table->enum('receive_method', ['RE-01', 'RE-02']);
             $table->enum('payment_method', ['P-PAY-01', 'P-PAY-02', 'P-PAY-03']);
-            $table->double('delivery_cost')->nullable();
+            $table->decimal('delivery_cost',15,2)->nullable();
             $table->foreignId('users_id')->constrained('users');
             $table->foreignId('suppliers_id')->constrained('suppliers');
-            $table->timestamp('receive_date')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

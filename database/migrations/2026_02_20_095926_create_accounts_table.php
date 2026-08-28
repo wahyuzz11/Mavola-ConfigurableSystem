@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('code',45);
             $table->string('name');
-            $table->enum('account_type',['Asset','Liability','Equity','Revenue','Expense']);
+            $table->enum('account_type', ['Asset', 'Liability', 'Equity', 'Revenue', 'Expense']);
             $table->tinyInteger('is_active');
-        
+            $table->timestamps();
         });
     }
 
@@ -25,6 +25,7 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
+
     {
         Schema::dropIfExists('accounts');
     }

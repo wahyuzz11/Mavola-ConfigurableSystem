@@ -13,21 +13,29 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 
-class PurchaseService{
-    
+class PurchaseService
+{
 
 
+    private function createPurchaseRecord(array $formData): Purchase
+    {
 
+        return Purchase::create([
+            'invoice_number' => $formData['invoice_number'],
+            'purchase_date' => $formData['purchase_date'],
+            'supliers_id' => $formData['suppliers'],
+            'total_price' => $formData['grand_total'],
+            'payment_method' => $formData['payment_method'],
+            'delivery_cost' => $formData['delivery_cost'] ?? null,
+            'users_id' => auth()->id(),
+        ]);
+    }
 
-
+    private function createPurchaseDetail(): PurchaseDetail
+    {
+        return PurchaseDetail::create([
+            
+        ]);
+    }
+ 
 }
-
-
-
-
-
-
-
-
-
-

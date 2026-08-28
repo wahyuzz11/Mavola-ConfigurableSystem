@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('company', function (Blueprint $table) {
+        Schema::create('journal_entries', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 45);
-            $table->string('phone_number', 45);
-            $table->longText('address');
-            $table->string('email', 45);
+            $table->longText('description');
+            $table->string('ref_code');
+            $table->foreignId('sales_id')->nullable()->references('id')->on('sales');
+            $table->foreignId('purchase_id')->nullable()->references('id')->on('purchase');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('company');
+        Schema::dropIfExists('journal_entries');
     }
 };

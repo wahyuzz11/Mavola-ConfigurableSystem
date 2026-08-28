@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('product_batchs', function (Blueprint $table) {
             $table->id();
             $table->string('serial_code', 45);
-            $table->float('stock');
-            $table->double('cost_per_batch')->nullable();
+            $table->decimal('stock',10,2);
+            $table->decimal('cost_per_batch',15,2);
             $table->date('purchase_date');
             $table->date('expired_date');
             $table->tinyInteger('empty_status');

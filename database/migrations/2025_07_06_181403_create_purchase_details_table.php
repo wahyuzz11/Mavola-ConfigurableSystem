@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('purchase_details', function (Blueprint $table) {
             $table->id();
-            $table->double('subtotal');
-            $table->integer('quantity');
-            $table->timestamp('created_at')->nullable();
-            $table->date('recalculate_date')->nullable();
+            $table->decimal('subtotal',15,2);
+            $table->decimal('quantity',10,2);
+            $table->integer('expire_days'); 
             $table->foreignId('purchases_id')->constrained('purchases');
             $table->foreignId('products_id')->constrained('products');
-            $table->timestamp('updated_at')->nullable();
+            $table->timestamps();
             $table->softDeletes();
         });
     }

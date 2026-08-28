@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('debt_histories', function (Blueprint $table) {
             $table->id();
-            $table->double('debt_nominal');
+            $table->decimal('debt_nominal',15,2);
             $table->dateTime('bill_date');
             $table->dateTime('due_date');
             $table->enum('status', ['pending', 'paid', 'late']);

@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('company', function (Blueprint $table) {
+        Schema::create('journal_entries_details', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 45);
-            $table->string('phone_number', 45);
-            $table->longText('address');
-            $table->string('email', 45);
+            $table->integer('debit');
+            $table->integer('credit');
+            $table->foreignId('accounts_id')->references('id')->on('accounts');
+            $table->foreignId('journal_entries_id')->references('id')->on('journal_entries');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('company');
+        Schema::dropIfExists('journal_entries_details');
     }
 };
