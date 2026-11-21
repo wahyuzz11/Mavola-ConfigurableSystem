@@ -54,4 +54,9 @@ class UserService
         $request->session()->invalidate();
         $request->session()->regenerateToken();
     }
+
+    public function register(Request $request): void
+    {
+        
+    }
 }

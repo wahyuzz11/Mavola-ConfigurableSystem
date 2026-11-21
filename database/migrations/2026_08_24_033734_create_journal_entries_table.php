@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->longText('description');
             $table->string('ref_code');
-            $table->foreignId('sales_id')->nullable()->references('id')->on('sales');
-            $table->foreignId('purchase_id')->nullable()->references('id')->on('purchase');
+            $table->foreignId('sales_id')->nullable()->references('id')->on('sales')->nullOnDelete();
+            $table->foreignId('purchase_id')->nullable()->references('id')->on('purchases')->nullOnDelete();
             $table->timestamps();
         });
     }

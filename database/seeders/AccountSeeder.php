@@ -13,21 +13,33 @@ class AccountSeeder extends Seeder
      */
     public function run(): void
     {
-         DB::table('accounts')->insert([
-            
+        DB::table('accounts')->insert([
+
             // ===== ASSETS (1xxx) =====
             [
                 'id' => 1,
                 'code' => '1101',
-                'name' => 'Kas',
+                'name' => 'Kas Tunai',
                 'type' => 'Asset',
                 'is_active' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+    
             [
                 'id' => 2,
                 'code' => '1102',
+                'name' => 'Kas Bank',
+                'type' => 'Asset',
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+
+            ],
+
+            [
+                'id' => 3,
+                'code' => '1103',
                 'name' => 'Persediaan',
                 'type' => 'Asset',
                 'is_active' => 1,
@@ -37,9 +49,9 @@ class AccountSeeder extends Seeder
 
             // ===== LIABILITY (2xxx) =====
             [
-                'id' => 3,
+                'id' => 4,
                 'code' => '2101',
-                'name' => 'Utang Usaha',
+                'name' => 'Hutang Usaha',
                 'type' => 'Liability',
                 'is_active' => 1,
                 'created_at' => now(),
@@ -48,7 +60,7 @@ class AccountSeeder extends Seeder
 
             // ===== EQUITY (3xxx) =====
             [
-                'id' => 4,
+                'id' => 5,
                 'code' => '3101',
                 'name' => 'Modal',
                 'type' => 'Equity',
@@ -59,7 +71,7 @@ class AccountSeeder extends Seeder
 
             // ===== REVENUE (4xxx) =====
             [
-                'id' => 5,
+                'id' => 6,
                 'code' => '4101',
                 'name' => 'Penjualan',
                 'type' => 'Revenue',
@@ -68,7 +80,7 @@ class AccountSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'id' => 6,
+                'id' => 7,
                 'code' => '4102',
                 'name' => 'Diskon Penjualan',
                 'type' => 'Revenue',
@@ -79,7 +91,7 @@ class AccountSeeder extends Seeder
 
             // ===== EXPENSE (5xxx) =====
             [
-                'id' => 7,
+                'id' => 8,
                 'code' => '5101',
                 'name' => 'HPP',
                 'type' => 'Expense',
@@ -87,6 +99,24 @@ class AccountSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+
+            [
+                'id' => 9,
+                'code' => '6101',
+                'name' => 'Biaya Pengiriman Pembelian',
+                'type' => 'Expense',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            
+            [
+                'id' => 10,
+                'code' => '6102',
+                'name' => 'Biaya Pengiriman Penjualan',
+                'type' => 'Expense',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
         ]);
     }
 }
