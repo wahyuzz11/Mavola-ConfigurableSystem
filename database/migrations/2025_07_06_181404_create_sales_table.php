@@ -22,7 +22,6 @@ return new class extends Migration
             $table->decimal('global_discount')->nullable();
             $table->decimal('total_discount')->nullable();
             $table->decimal('discount_cashback')->nullable();
-            $table->double('discount_cashback')->nullable();
             $table->decimal('delivery_cost',15,2)->nullable();
             $table->foreignId('users_id')->constrained('users');
             $table->foreignId('customers_id')->constrained('customers');

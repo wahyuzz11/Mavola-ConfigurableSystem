@@ -11,12 +11,10 @@ use App\Http\Controllers\JournalEntryController;
 use App\Http\Controllers\ProductBatchController;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
+use Illuminate\Http\Request;
 
 class PurchaseService
 {
-
-
     private function createPurchaseRecord(array $formData): Purchase
     {
 
@@ -31,11 +29,17 @@ class PurchaseService
         ]);
     }
 
-    private function createPurchaseDetail(): PurchaseDetail
+    private function createPurchaseDetail(array $formData): PurchaseDetail
     {
-        return PurchaseDetail::create([
-            
+        return purchaseDetail::create([
+           'subtotal' => $formData['subtotal'],
+           'quantity' => $formData['quantity'],
+           'expire_days' => $formData['expire_days'],
+           'purchases_id' => $formData['purchases_id'],
+           'products_id' => $formData['products_id'],
         ]);
     }
+
+    
  
 }
